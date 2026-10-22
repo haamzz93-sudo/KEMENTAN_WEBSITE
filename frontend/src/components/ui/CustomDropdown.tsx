@@ -47,7 +47,7 @@ export default function CustomDropdown({
   }, []);
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={`relative ${className} ${isOpen ? 'z-50' : 'z-10'}`} ref={dropdownRef}>
       {label && (
         <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
           {label}
@@ -88,9 +88,9 @@ export default function CustomDropdown({
         />
       </button>
 
-      {/* Liquid Glass Dropdown Menu (Dual-Mode) */}
+      {/* Solid Non-Bleed Dropdown Menu */}
       {isOpen && (
-        <div className="absolute z-50 mt-1.5 w-full rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-700 shadow-[0_16px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] ring-1 ring-black/5 dark:ring-white/10 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute z-[100] mt-1.5 w-full rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl ring-1 ring-black/10 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
           <div className="max-h-64 overflow-y-auto p-1.5 space-y-1 custom-scrollbar">
             {options.map((opt) => {
               const isSelected = opt.value === value;

@@ -1108,7 +1108,7 @@ export default function MasterDataPage() {
       ========================================================================= */}
       {activeTab === 'bpsb' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs relative z-30">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
@@ -1244,7 +1244,7 @@ export default function MasterDataPage() {
       ========================================================================= */}
       {activeTab === 'lssm' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs relative z-30">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
