@@ -3,27 +3,60 @@
 $jsonData = file_get_contents(__DIR__ . '/../../master_excel_data.json');
 $master = json_decode($jsonData, true);
 
+// Load credentials from .env
 $host = '127.0.0.1';
+$port = 3306;
 $dbname = 'sim_benih_horti';
 $user = 'root';
 $pass = '';
 
+$envPaths = [__DIR__ . '/../.env', __DIR__ . '/../../.env', __DIR__ . '/.env'];
+foreach ($envPaths as $envPath) {
+    if (file_exists($envPath)) {
+        $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line) || strpos($line, '#') === 0) continue;
+            if (strpos($line, '=') !== false) {
+                list($k, $v) = explode('=', $line, 2);
+                $k = trim($k);
+                $v = trim($v, " \t\n\r\0\x0B\"'");
+                if ($k === 'DB_HOST') $host = $v;
+                if ($k === 'DB_PORT') $port = intval($v);
+                if ($k === 'DB_DATABASE') $dbname = $v;
+                if ($k === 'DB_USERNAME') $user = $v;
+                if ($k === 'DB_PASSWORD') $pass = $v;
+            }
+        }
+        break;
+    }
+}
+
+if (getenv('DB_HOST')) $host = getenv('DB_HOST');
+if (getenv('DB_PORT')) $port = intval(getenv('DB_PORT'));
+if (getenv('DB_DATABASE')) $dbname = getenv('DB_DATABASE');
+if (getenv('DB_USERNAME')) $user = getenv('DB_USERNAME');
+if (getenv('DB_PASSWORD')) $pass = getenv('DB_PASSWORD');
+
 $pdo = null;
-foreach ([3307, 3306] as $port) {
+$portsToTry = array_unique([$port, 3306, 3307]);
+$lastError = '';
+
+foreach ($portsToTry as $p) {
     try {
-        $pdo = new PDO("mysql:host={$host};port={$port};dbname={$dbname};charset=utf8mb4", $user, $pass, [
+        $pdo = new PDO("mysql:host={$host};port={$p};dbname={$dbname};charset=utf8mb4", $user, $pass, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
         ]);
-        echo "Connected to MySQL on port {$port}\n";
+        echo "Connected to MySQL database '{$dbname}' on {$host}:{$p} as user '{$user}'\n";
         break;
     } catch (PDOException $e) {
-        // try next
+        $lastError = $e->getMessage();
     }
 }
 
 if (!$pdo) {
-    die("Failed to connect to MySQL\n");
+    die("Failed to connect to MySQL: {$lastError}\n");
 }
 
 // 1. master_crop_types
