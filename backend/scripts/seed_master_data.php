@@ -80,10 +80,10 @@ CREATE TABLE IF NOT EXISTS master_lssm (
 $pdo->exec("TRUNCATE TABLE master_crop_types;");
 $stmtCrop = $pdo->prepare("INSERT INTO master_crop_types (code, name, category, commodities) VALUES (?, ?, ?, ?)");
 $crops = [
-    ['sayuran', 'Tanaman Sayuran', 'Hortikultura Pangan', 'Mentimun, Buncis, Cabai Rawit, Cabai Merah, Kangkung, Kacang Panjang, Tomat, Sawi Hijau, Bawang Merah, Kentang, Terung, Kubis'],
-    ['buah', 'Tanaman Buah', 'Hortikultura Buah Tropika', 'Melon, Semangka, Alpukat, Mangga, Rambutan, Durian, Jeruk Siem, Pisang Cavendish, Pepaya California, Nanas'],
-    ['hias', 'Tanaman Hias', 'Florikultura', 'Anggrek Phalaenopsis, Anggrek Dendrobium, Krisan, Mawar, Sedap Malam, Aglaonema, Anthurium, Dracaena'],
-    ['obat', 'Tanaman Obat', 'Biofarmaka', 'Jahe Merah, Jahe Gajah, Kunyit, Temulawak, Lengkuas, Kencur, Kapulaga, Mengkudu, Lidah Buaya']
+    ['sayuran', 'Tanaman Sayuran', 'Hortikultura Pangan', 'Mentimun, Buncis, Cabai, Cabai Merah, Cabai Rawit, Kangkung, Kacang Panjang, Tomat, Sawi Hijau, Bayam, Jagung Manis, Oyong, Paria, Terong, Bawang Merah, Kentang, Bawang Putih, Kol Bunga'],
+    ['buah', 'Tanaman Buah', 'Hortikultura Buah Tropika', 'Melon, Semangka, Alpukat, Mangga, Rambutan, Durian, Jeruk, Manggis, Pisang, Jambu Air, Jambu Biji, Lengkeng, Nenas, Salak, Pepaya, Duku, Sukun, Sawo, Nangka, Petai, Sirsak, Jambo Bol, Belimbing, Cempedak, Matoa, Blewah, Stroberi'],
+    ['hias', 'Tanaman Hias', 'Florikultura', 'Anggrek, Krisan, Mawar, Sedap Malam, Aglaonema, Anthurium, Dracaena'],
+    ['obat', 'Tanaman Obat', 'Biofarmaka', 'Jahe, Kunyit, Temulawak, Lengkuas, Kencur, Kapulaga, Mengkudu, Lidah Buaya']
 ];
 foreach ($crops as $c) {
     $stmtCrop->execute($c);

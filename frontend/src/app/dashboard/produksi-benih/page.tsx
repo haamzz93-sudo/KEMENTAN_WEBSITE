@@ -22,7 +22,7 @@ import {
   Lock,
   UserCheck
 } from 'lucide-react';
-import { PROVINCES_INDONESIA, COMMODITIES_BY_CATEGORY, INITIAL_SEED_PRODUCTIONS, INITIAL_PRODUCERS } from '@/data/masterData';
+import { PROVINCES_INDONESIA, COMMODITIES_BY_CATEGORY, INITIAL_SEED_PRODUCTIONS, INITIAL_PRODUCERS, getStoredCommodities, saveStoredCommodities } from '@/data/masterData';
 import { MonthlySeedProduction, PlantCategory, SeedClass, SeedUnit, UserRole } from '@/types';
 
 export default function SeedProductionBalancePage() {
@@ -41,6 +41,9 @@ export default function SeedProductionBalancePage() {
   const [currentUserName, setCurrentUserName] = useState<string>('Direktorat Perbenihan');
   const [currentAgency, setCurrentAgency] = useState<string>('Kementerian Pertanian');
   
+  // Dynamic master commodities
+  const [commoditiesData, setCommoditiesData] = useState(COMMODITIES_BY_CATEGORY);
+
   // Is custom commodity enabled
   const [isCustomCommodity, setIsCustomCommodity] = useState(false);
   const [customCommodityName, setCustomCommodityName] = useState('');
@@ -64,6 +67,15 @@ export default function SeedProductionBalancePage() {
     distribution: 300,
     signedReportFile: ''
   });
+
+  useEffect(() => {
+    setCommoditiesData(getStoredCommodities());
+    const handleCommoditySync = () => {
+      setCommoditiesData(getStoredCommodities());
+    };
+    window.addEventListener('master_commodities_updated', handleCommoditySync);
+    return () => window.removeEventListener('master_commodities_updated', handleCommoditySync);
+  }, []);
 
   useEffect(() => {
     try {
@@ -115,13 +127,31 @@ export default function SeedProductionBalancePage() {
 
   const handleCategoryChange = (cat: PlantCategory) => {
     setIsCustomCommodity(false);
+    const list = commoditiesData[cat] || COMMODITIES_BY_CATEGORY[cat] || [];
+    const first = list[0] || { name: 'Cabai Merah', unit: 'kg' };
     setFormData(prev => ({
       ...prev,
       category: cat,
-      commodity: COMMODITIES_BY_CATEGORY[cat][0].name,
-      unit: COMMODITIES_BY_CATEGORY[cat][0].unit as SeedUnit
+      commodity: first.name,
+      unit: (first.unit as SeedUnit) || 'kg'
     }));
   };
+
+  const handleCommoditySelect = (name: string) => {
+    if (name === '__custom__') {
+      setIsCustomCommodity(true);
+    } else {
+      setIsCustomCommodity(false);
+      const list = commoditiesData[formData.category] || [];
+      const found = list.find(c => c.name === name);
+      setFormData(prev => ({
+        ...prev,
+        commodity: name,
+        unit: (found?.unit as SeedUnit) || prev.unit
+      }));
+    }
+  };
+
 
   const handleReportFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -147,6 +177,19 @@ export default function SeedProductionBalancePage() {
     const finalCommodity = isCustomCommodity && customCommodityName.trim() 
       ? customCommodityName.trim() 
       : formData.commodity;
+
+    // If custom commodity is used, auto-save to master data
+    if (isCustomCommodity && customCommodityName.trim()) {
+      const newName = customCommodityName.trim();
+      const updated = { ...commoditiesData };
+      const catList = [...(updated[formData.category] || [])];
+      if (!catList.some(c => c.name.toLowerCase() === newName.toLowerCase())) {
+        catList.push({ name: newName, unit: formData.unit });
+        updated[formData.category] = catList;
+        setCommoditiesData(updated);
+        saveStoredCommodities(updated);
+      }
+    }
 
     const newRecord: MonthlySeedProduction & { producerName?: string; signedReportFile?: string } = {
       id: `bal-${Date.now()}`,
@@ -636,16 +679,10 @@ export default function SeedProductionBalancePage() {
                     <select
                       name="commodity"
                       value={formData.commodity}
-                      onChange={(e) => {
-                        if (e.target.value === '__custom__') {
-                          setIsCustomCommodity(true);
-                        } else {
-                          handleInputChange(e);
-                        }
-                      }}
+                      onChange={(e) => handleCommoditySelect(e.target.value)}
                       className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
                     >
-                      {COMMODITIES_BY_CATEGORY[formData.category].map(c => (
+                      {(commoditiesData[formData.category] || COMMODITIES_BY_CATEGORY[formData.category] || []).map(c => (
                         <option key={c.name} value={c.name}>{c.name}</option>
                       ))}
                       <option value="__custom__">+ Tambah / Ketik Komoditas Lainnya...</option>

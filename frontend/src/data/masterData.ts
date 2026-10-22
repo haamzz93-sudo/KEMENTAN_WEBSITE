@@ -41,44 +41,108 @@ export const PROVINCES_INDONESIA = [
   "Papua Barat Daya"
 ];
 
-export const COMMODITIES_BY_CATEGORY = {
+export interface CommodityItem {
+  name: string;
+  unit: string;
+  varietyExamples?: string;
+}
+
+export const COMMODITIES_BY_CATEGORY: Record<'sayuran' | 'buah' | 'hias' | 'obat', CommodityItem[]> = {
   sayuran: [
-    { name: "Cabai Merah", unit: "kg" },
-    { name: "Cabai Rawit", unit: "kg" },
-    { name: "Bawang Merah", unit: "kg" },
-    { name: "Tomat", unit: "kg" },
-    { name: "Mentimun", unit: "kg" },
-    { name: "Buncis", unit: "kg" },
-    { name: "Kangkung", unit: "kg" },
-    { name: "Kacang Panjang", unit: "kg" },
-    { name: "Sawi / Caisim", unit: "kg" },
-    { name: "Kentang (Knol G0/G2)", unit: "knol" }
+    { name: "Mentimun", unit: "kg", varietyExamples: "Venus, Hercules, Roberto" },
+    { name: "Buncis", unit: "kg", varietyExamples: "Lebat-3, Perkasa" },
+    { name: "Cabai", unit: "kg", varietyExamples: "Cabai Merah Keriting, Cabai Besar" },
+    { name: "Cabai Merah", unit: "kg", varietyExamples: "Tanjung-2, TM99, Pilar" },
+    { name: "Cabai Rawit", unit: "kg", varietyExamples: "Ori 212, Nirmala, Maruti" },
+    { name: "Kangkung", unit: "kg", varietyExamples: "Bangkok LP-1, Mahar" },
+    { name: "Kacang Panjang", unit: "kg", varietyExamples: "Kanton Tavi, Parade Tavi" },
+    { name: "Tomat", unit: "kg", varietyExamples: "Servo, Tymoti, Karina" },
+    { name: "Sawi Hijau", unit: "kg", varietyExamples: "Tosakan, Shinta" },
+    { name: "Bayam", unit: "kg", varietyExamples: "Maestro, Giti Hijau" },
+    { name: "Jagung Manis", unit: "kg", varietyExamples: "Bonanza F1, Talenta" },
+    { name: "Oyong", unit: "kg", varietyExamples: "Anggun F1, Prima" },
+    { name: "Paria", unit: "kg", varietyExamples: "Lipan F1, Raden" },
+    { name: "Terong", unit: "kg", varietyExamples: "Yumi F1, Antaboga" },
+    { name: "Bawang Merah", unit: "kg", varietyExamples: "Bima Brebes, Tajuk, Bauji" },
+    { name: "Kentang", unit: "knol", varietyExamples: "Granola L, Atlantik, Medians" },
+    { name: "Bawang Putih", unit: "kg", varietyExamples: "Lumbu Hijau, Tawangmangu Baru" },
+    { name: "Kol Bunga", unit: "kg", varietyExamples: "Mona F1, White Shot" }
   ],
   buah: [
-    { name: "Melon", unit: "kg" },
-    { name: "Semangka", unit: "kg" },
-    { name: "Alpukat", unit: "batang" },
-    { name: "Mangga", unit: "batang" },
-    { name: "Durian", unit: "batang" },
-    { name: "Jeruk Siam / Garut", unit: "batang" },
-    { name: "Rambutan", unit: "batang" },
-    { name: "Pisang Barangan / Cavendish", unit: "anakan" }
+    { name: "Melon", unit: "kg", varietyExamples: "Action 434, Gracia" },
+    { name: "Semangka", unit: "kg", varietyExamples: "Inul, Amara, Setabindo" },
+    { name: "Alpukat", unit: "batang", varietyExamples: "Miki, Kendil, Aligator" },
+    { name: "Mangga", unit: "batang", varietyExamples: "Gedong Gincu, Arumanis 143" },
+    { name: "Rambutan", unit: "batang", varietyExamples: "Binjai, Rapiah, Garuda" },
+    { name: "Durian", unit: "batang", varietyExamples: "Musang King, Bawor, Montong" },
+    { name: "Jeruk", unit: "batang", varietyExamples: "Siem Madu, Keprok Batu 55" },
+    { name: "Manggis", unit: "batang", varietyExamples: "Kaligesing, Wanayasa" },
+    { name: "Pisang", unit: "anakan", varietyExamples: "Cavendish, Barangan, Raja Bulu" },
+    { name: "Jambu Air", unit: "batang", varietyExamples: "Citra, Deli Hijau" },
+    { name: "Jambu Biji", unit: "batang", varietyExamples: "Kristal, Getas Merah" },
+    { name: "Lengkeng", unit: "batang", varietyExamples: "Itoh, Diamond River, Kateki" },
+    { name: "Nenas", unit: "anakan", varietyExamples: "Subang, Queen, Honi" },
+    { name: "Salak", unit: "anakan", varietyExamples: "Pondoh Super, Gula Pasir" },
+    { name: "Pepaya", unit: "batang", varietyExamples: "California (Callina), Merah Delima" },
+    { name: "Duku", unit: "batang", varietyExamples: "Kumpeh, Condet, Rasuan" },
+    { name: "Sukun", unit: "batang", varietyExamples: "Kuning Sukun, Bone" },
+    { name: "Sawo", unit: "batang", varietyExamples: "Manila, Apel Madu" },
+    { name: "Nangka", unit: "batang", varietyExamples: "Mini, Kandel, Madu" },
+    { name: "Petai", unit: "batang", varietyExamples: "Padi, Gajah" },
+    { name: "Sirsak", unit: "batang", varietyExamples: "Ratu, Madu" },
+    { name: "Jambo Bol", unit: "batang", varietyExamples: "Bol Jamaika" },
+    { name: "Belimbing", unit: "batang", varietyExamples: "Demak Kunir, Dewi" },
+    { name: "Cempedak", unit: "batang", varietyExamples: "Nangkadak, CH28" },
+    { name: "Matoa", unit: "batang", varietyExamples: "Papua Merah, Kuning" },
+    { name: "Blewah", unit: "kg", varietyExamples: "Bisma, Arum Manis" },
+    { name: "Stroberi", unit: "kg", varietyExamples: "Sweet Charlie, Rosalinda" }
   ],
   hias: [
-    { name: "Krisan", unit: "batang" },
-    { name: "Anggrek Phalaenopsis", unit: "planlet" },
-    { name: "Anggrek Dendrobium", unit: "planlet" },
-    { name: "Mawar Potong", unit: "stek" },
-    { name: "Aglaonema", unit: "batang" }
+    { name: "Anggrek", unit: "planlet", varietyExamples: "Phalaenopsis, Dendrobium, Vanda" },
+    { name: "Krisan", unit: "stek", varietyExamples: "Puspita Pelangi, Pasopati" },
+    { name: "Mawar", unit: "stek", varietyExamples: "Mawar Potong Merah, Holland" },
+    { name: "Sedap Malam", unit: "batang", varietyExamples: "Roro Anteng, Dian Arum" },
+    { name: "Aglaonema", unit: "batang", varietyExamples: "Pride of Sumatra, Suksom" },
+    { name: "Anthurium", unit: "batang", varietyExamples: "Jenmanii, Gelombang Cinta" },
+    { name: "Dracaena", unit: "batang", varietyExamples: "Lucky Bamboo, Compacta" }
   ],
   obat: [
-    { name: "Jahe Merah", unit: "kg" },
-    { name: "Kunyit", unit: "kg" },
-    { name: "Temulawak", unit: "kg" },
-    { name: "Kencur", unit: "kg" },
-    { name: "Kapulaga", unit: "kg" }
+    { name: "Jahe", unit: "kg", varietyExamples: "Jahe Merah, Jahe Gajah, Jahe Emprit" },
+    { name: "Kunyit", unit: "kg", varietyExamples: "Kunyit Kuning, Curcuma Domestica" },
+    { name: "Temulawak", unit: "kg", varietyExamples: "Curcuma Xanthorrhiza" },
+    { name: "Lengkuas", unit: "kg", varietyExamples: "Lengkuas Putih, Merah" },
+    { name: "Kencur", unit: "kg", varietyExamples: "Galesia, Balittro" },
+    { name: "Kapulaga", unit: "kg", varietyExamples: "Kapulaga Jawa, Sabrang" },
+    { name: "Mengkudu", unit: "batang", varietyExamples: "Morinda Citrifolia" },
+    { name: "Lidah Buaya", unit: "anakan", varietyExamples: "Aloe Chinensis, Barbadensis" }
   ]
 };
+
+const COMMODITIES_STORAGE_KEY = 'kementan_master_commodities';
+
+export function getStoredCommodities(): Record<'sayuran' | 'buah' | 'hias' | 'obat', CommodityItem[]> {
+  if (typeof window === 'undefined') {
+    return COMMODITIES_BY_CATEGORY;
+  }
+  try {
+    const raw = localStorage.getItem(COMMODITIES_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed.sayuran && parsed.buah && parsed.hias && parsed.obat) {
+        return parsed;
+      }
+    }
+  } catch {}
+  return COMMODITIES_BY_CATEGORY;
+}
+
+export function saveStoredCommodities(data: Record<'sayuran' | 'buah' | 'hias' | 'obat', CommodityItem[]>) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COMMODITIES_STORAGE_KEY, JSON.stringify(data));
+    window.dispatchEvent(new Event('master_commodities_updated'));
+  }
+}
+
 
 // Initial Mock Data: Modul A (Produsen & Pengedar)
 export const INITIAL_PRODUCERS: ProducerDistributor[] = [

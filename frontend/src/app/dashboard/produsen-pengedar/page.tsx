@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Building2, 
   Plus, 
@@ -22,7 +22,7 @@ import {
   Layers,
   MapPin
 } from 'lucide-react';
-import { PROVINCES_INDONESIA, COMMODITIES_BY_CATEGORY, INITIAL_PRODUCERS } from '@/data/masterData';
+import { PROVINCES_INDONESIA, COMMODITIES_BY_CATEGORY, INITIAL_PRODUCERS, getStoredCommodities, saveStoredCommodities } from '@/data/masterData';
 import { ProducerDistributor, SeedUnit } from '@/types';
 
 export default function ProducerDistributorPage() {
@@ -31,6 +31,18 @@ export default function ProducerDistributorPage() {
   const [filterRole, setFilterRole] = useState<'semua' | 'produsen' | 'pengedar'>('semua');
   const [searchQuery, setSearchQuery] = useState('');
   
+  // Dynamic master commodities
+  const [commoditiesData, setCommoditiesData] = useState(COMMODITIES_BY_CATEGORY);
+
+  useEffect(() => {
+    setCommoditiesData(getStoredCommodities());
+    const handleCommoditySync = () => {
+      setCommoditiesData(getStoredCommodities());
+    };
+    window.addEventListener('master_commodities_updated', handleCommoditySync);
+    return () => window.removeEventListener('master_commodities_updated', handleCommoditySync);
+  }, []);
+
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -951,13 +963,41 @@ export default function ProducerDistributorPage() {
                   <select
                     name="commodity"
                     value={formData.commodity}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      const selected = e.target.value;
+                      // Find default unit
+                      let foundUnit: SeedUnit = 'kg';
+                      for (const cat of ['sayuran', 'buah', 'hias', 'obat'] as const) {
+                        const item = (commoditiesData[cat] || []).find(c => c.name === selected);
+                        if (item) {
+                          foundUnit = (item.unit as SeedUnit) || 'kg';
+                          break;
+                        }
+                      }
+                      setFormData(prev => ({ ...prev, commodity: selected, unit: foundUnit }));
+                    }}
                     className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
                   >
-                    {COMMODITIES_BY_CATEGORY.sayuran.map(c => <option key={c.name} value={c.name}>[Sayur] {c.name}</option>)}
-                    {COMMODITIES_BY_CATEGORY.buah.map(c => <option key={c.name} value={c.name}>[Buah] {c.name}</option>)}
-                    {COMMODITIES_BY_CATEGORY.hias.map(c => <option key={c.name} value={c.name}>[Hias] {c.name}</option>)}
-                    {COMMODITIES_BY_CATEGORY.obat.map(c => <option key={c.name} value={c.name}>[Obat] {c.name}</option>)}
+                    <optgroup label="Tanaman Sayuran (Hortikultura Pangan)">
+                      {(commoditiesData.sayuran || COMMODITIES_BY_CATEGORY.sayuran).map(c => (
+                        <option key={c.name} value={c.name}>[Sayur] {c.name}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Tanaman Buah (Hortikultura Buah Tropika)">
+                      {(commoditiesData.buah || COMMODITIES_BY_CATEGORY.buah).map(c => (
+                        <option key={c.name} value={c.name}>[Buah] {c.name}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Tanaman Hias (Florikultura)">
+                      {(commoditiesData.hias || COMMODITIES_BY_CATEGORY.hias).map(c => (
+                        <option key={c.name} value={c.name}>[Hias] {c.name}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Tanaman Obat (Biofarmaka)">
+                      {(commoditiesData.obat || COMMODITIES_BY_CATEGORY.obat).map(c => (
+                        <option key={c.name} value={c.name}>[Obat] {c.name}</option>
+                      ))}
+                    </optgroup>
                   </select>
                 </div>
 

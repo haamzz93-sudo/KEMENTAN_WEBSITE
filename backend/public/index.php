@@ -869,63 +869,256 @@ if (strpos($uri, '/api/varieties') === 0) {
 if (strpos($uri, '/api/master') === 0) {
     $db = getDb();
 
-    // GET /api/master/crops
+    // GET, POST, DELETE /api/master/crops
     if (strpos($uri, '/api/master/crops') === 0) {
+        if ($method === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+            $code = trim(strtolower($input['code'] ?? ''));
+            $name = trim($input['name'] ?? '');
+            $category = trim($input['category'] ?? '');
+            $commodities = trim($input['commodities'] ?? '');
+
+            if (!$code || !$name) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Kode dan Nama Jenis Tanaman wajib diisi.']);
+                exit;
+            }
+
+            // Check if exists
+            $stmt = $db->prepare("SELECT id FROM master_crop_types WHERE code = ?");
+            $stmt->execute([$code]);
+            $existing = $stmt->fetch();
+
+            if ($existing) {
+                $up = $db->prepare("UPDATE master_crop_types SET name = ?, category = ?, commodities = ? WHERE code = ?");
+                $up->execute([$name, $category, $commodities, $code]);
+                echo json_encode(['status' => 'success', 'message' => "Jenis Tanaman '{$name}' berhasil diperbarui."]);
+            } else {
+                $ins = $db->prepare("INSERT INTO master_crop_types (code, name, category, commodities) VALUES (?, ?, ?, ?)");
+                $ins->execute([$code, $name, $category, $commodities]);
+                echo json_encode(['status' => 'success', 'message' => "Jenis Tanaman '{$name}' berhasil ditambahkan."]);
+            }
+            exit;
+        }
+
+        if ($method === 'DELETE') {
+            $input = json_decode(file_get_contents('php://input'), true) ?? $_GET;
+            $id = (int)($input['id'] ?? 0);
+            $code = trim($input['code'] ?? '');
+            if ($id > 0) {
+                $del = $db->prepare("DELETE FROM master_crop_types WHERE id = ?");
+                $del->execute([$id]);
+            } elseif ($code) {
+                $del = $db->prepare("DELETE FROM master_crop_types WHERE code = ?");
+                $del->execute([$code]);
+            }
+            echo json_encode(['status' => 'success', 'message' => 'Jenis tanaman berhasil dihapus.']);
+            exit;
+        }
+
         $stmt = $db->query("SELECT * FROM master_crop_types ORDER BY id ASC");
         echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll()]);
         exit;
     }
 
-    // GET /api/master/units
+    // POST, DELETE /api/master/commodities (CRUD Komoditas Spesifik)
+    if (strpos($uri, '/api/master/commodities') === 0) {
+        $input = json_decode(file_get_contents('php://input'), true) ?? ($method === 'GET' ? $_GET : $_POST);
+        $cropCode = trim(strtolower($input['crop_code'] ?? $input['category'] ?? 'sayuran'));
+        $name = trim($input['name'] ?? '');
+        $oldName = trim($input['old_name'] ?? '');
+
+        if ($method === 'POST') {
+            if (!$name) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Nama komoditas wajib diisi.']);
+                exit;
+            }
+
+            $stmt = $db->prepare("SELECT id, commodities FROM master_crop_types WHERE code = ?");
+            $stmt->execute([$cropCode]);
+            $row = $stmt->fetch();
+
+            if ($row) {
+                $items = array_map('trim', explode(',', $row['commodities']));
+                if ($oldName && ($key = array_search($oldName, $items)) !== false) {
+                    $items[$key] = $name; // Update
+                } elseif (!in_array($name, $items)) {
+                    $items[] = $name; // Append
+                }
+                $updatedStr = implode(', ', array_filter($items));
+                $up = $db->prepare("UPDATE master_crop_types SET commodities = ? WHERE code = ?");
+                $up->execute([$updatedStr, $cropCode]);
+                echo json_encode(['status' => 'success', 'message' => "Komoditas '{$name}' berhasil disimpan ke kategori {$cropCode}."]);
+            } else {
+                echo json_encode(['status' => 'success', 'message' => "Komoditas '{$name}' diproses."]);
+            }
+            exit;
+        }
+
+        if ($method === 'DELETE') {
+            if (!$name) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Nama komoditas yang akan dihapus wajib diisi.']);
+                exit;
+            }
+
+            $stmt = $db->prepare("SELECT id, commodities FROM master_crop_types WHERE code = ?");
+            $stmt->execute([$cropCode]);
+            $row = $stmt->fetch();
+
+            if ($row) {
+                $items = array_map('trim', explode(',', $row['commodities']));
+                $filtered = array_filter($items, function($item) use ($name) {
+                    return strcasecmp($item, $name) !== 0;
+                });
+                $updatedStr = implode(', ', $filtered);
+                $up = $db->prepare("UPDATE master_crop_types SET commodities = ? WHERE code = ?");
+                $up->execute([$updatedStr, $cropCode]);
+                echo json_encode(['status' => 'success', 'message' => "Komoditas '{$name}' berhasil dihapus."]);
+            } else {
+                echo json_encode(['status' => 'success', 'message' => 'Komoditas dihapus.']);
+            }
+            exit;
+        }
+    }
+
+    // GET, POST, DELETE /api/master/units
     if (strpos($uri, '/api/master/units') === 0) {
+        if ($method === 'POST') {
+            $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+            $code = trim(strtolower($input['code'] ?? ''));
+            $name = trim($input['name'] ?? '');
+            $desc = trim($input['description'] ?? '');
+            $note = trim($input['note'] ?? '');
+
+            if (!$code || !$name) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Kode dan Nama Satuan wajib diisi.']);
+                exit;
+            }
+
+            $stmt = $db->prepare("SELECT id FROM master_units WHERE code = ?");
+            $stmt->execute([$code]);
+            if ($stmt->fetch()) {
+                $up = $db->prepare("UPDATE master_units SET name = ?, description = ?, note = ? WHERE code = ?");
+                $up->execute([$name, $desc, $note, $code]);
+                echo json_encode(['status' => 'success', 'message' => "Satuan '{$name}' berhasil diperbarui."]);
+            } else {
+                $ins = $db->prepare("INSERT INTO master_units (code, name, description, note) VALUES (?, ?, ?, ?)");
+                $ins->execute([$code, $name, $desc, $note]);
+                echo json_encode(['status' => 'success', 'message' => "Satuan '{$name}' berhasil ditambahkan."]);
+            }
+            exit;
+        }
+
+        if ($method === 'DELETE') {
+            $input = json_decode(file_get_contents('php://input'), true) ?? $_GET;
+            $id = (int)($input['id'] ?? 0);
+            $code = trim($input['code'] ?? '');
+            if ($id > 0) {
+                $del = $db->prepare("DELETE FROM master_units WHERE id = ?");
+                $del->execute([$id]);
+            } elseif ($code) {
+                $del = $db->prepare("DELETE FROM master_units WHERE code = ?");
+                $del->execute([$code]);
+            }
+            echo json_encode(['status' => 'success', 'message' => 'Satuan benih berhasil dihapus.']);
+            exit;
+        }
+
         $stmt = $db->query("SELECT * FROM master_units ORDER BY id ASC");
         echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll()]);
         exit;
     }
 
-    // GET /api/master/bpsb & POST /api/master/bpsb
+    // GET /api/master/bpsb & POST /api/master/bpsb & DELETE
     if (strpos($uri, '/api/master/bpsb') === 0) {
         if ($method === 'POST') {
             $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+            $id = (int)($input['id'] ?? 0);
             $prov = trim($input['provinsi'] ?? '');
             $nama = trim($input['nama_bpsb'] ?? '');
             $alamat = trim($input['alamat'] ?? '');
+            $status = trim($input['status'] ?? 'aktif');
+
             if (!$prov || !$nama) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'Provinsi dan Nama BPSB wajib diisi.']);
                 exit;
             }
-            $stmtCount = $db->query("SELECT COUNT(*) FROM master_bpsb");
-            $noUrut = (int)$stmtCount->fetchColumn() + 1;
-            $stmt = $db->prepare("INSERT INTO master_bpsb (no_urut, provinsi, nama_bpsb, alamat) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$noUrut, $prov, $nama, $alamat]);
-            echo json_encode(['status' => 'success', 'message' => 'BPSB berhasil ditambahkan.']);
+
+            if ($id > 0) {
+                $stmt = $db->prepare("UPDATE master_bpsb SET provinsi = ?, nama_bpsb = ?, alamat = ?, status = ? WHERE id = ?");
+                $stmt->execute([$prov, $nama, $alamat, $status, $id]);
+                echo json_encode(['status' => 'success', 'message' => 'Data BPSB berhasil diperbarui.']);
+            } else {
+                $stmtCount = $db->query("SELECT COUNT(*) FROM master_bpsb");
+                $noUrut = (int)$stmtCount->fetchColumn() + 1;
+                $stmt = $db->prepare("INSERT INTO master_bpsb (no_urut, provinsi, nama_bpsb, alamat, status) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$noUrut, $prov, $nama, $alamat, $status]);
+                echo json_encode(['status' => 'success', 'message' => 'BPSB berhasil ditambahkan.']);
+            }
             exit;
         }
+
+        if ($method === 'DELETE') {
+            $input = json_decode(file_get_contents('php://input'), true) ?? $_GET;
+            $id = (int)($input['id'] ?? 0);
+            if ($id > 0) {
+                $del = $db->prepare("DELETE FROM master_bpsb WHERE id = ?");
+                $del->execute([$id]);
+            }
+            echo json_encode(['status' => 'success', 'message' => 'Data BPSB berhasil dihapus.']);
+            exit;
+        }
+
         $stmt = $db->query("SELECT * FROM master_bpsb ORDER BY no_urut ASC");
         echo json_encode(['status' => 'success', 'total' => $stmt->rowCount(), 'data' => $stmt->fetchAll()]);
         exit;
     }
 
-    // GET /api/master/lssm & POST /api/master/lssm
+    // GET /api/master/lssm & POST /api/master/lssm & DELETE
     if (strpos($uri, '/api/master/lssm') === 0) {
         if ($method === 'POST') {
             $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+            $id = (int)($input['id'] ?? 0);
             $prov = trim($input['provinsi'] ?? '');
             $nama = trim($input['nama_produsen'] ?? '');
             $alamat = trim($input['alamat'] ?? '');
+            $status = trim($input['status'] ?? 'terakreditasi');
+
             if (!$prov || !$nama) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'Provinsi dan Nama Produsen/LSSM wajib diisi.']);
                 exit;
             }
-            $stmtCount = $db->query("SELECT COUNT(*) FROM master_lssm");
-            $noUrut = (int)$stmtCount->fetchColumn() + 1;
-            $stmt = $db->prepare("INSERT INTO master_lssm (no_urut, provinsi, nama_produsen, alamat) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$noUrut, $prov, $nama, $alamat]);
-            echo json_encode(['status' => 'success', 'message' => 'LSSM/Produsen binaan berhasil ditambahkan.']);
+
+            if ($id > 0) {
+                $stmt = $db->prepare("UPDATE master_lssm SET provinsi = ?, nama_produsen = ?, alamat = ?, status = ? WHERE id = ?");
+                $stmt->execute([$prov, $nama, $alamat, $status, $id]);
+                echo json_encode(['status' => 'success', 'message' => 'Data LSSM berhasil diperbarui.']);
+            } else {
+                $stmtCount = $db->query("SELECT COUNT(*) FROM master_lssm");
+                $noUrut = (int)$stmtCount->fetchColumn() + 1;
+                $stmt = $db->prepare("INSERT INTO master_lssm (no_urut, provinsi, nama_produsen, alamat, status) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$noUrut, $prov, $nama, $alamat, $status]);
+                echo json_encode(['status' => 'success', 'message' => 'LSSM/Produsen binaan berhasil ditambahkan.']);
+            }
             exit;
         }
+
+        if ($method === 'DELETE') {
+            $input = json_decode(file_get_contents('php://input'), true) ?? $_GET;
+            $id = (int)($input['id'] ?? 0);
+            if ($id > 0) {
+                $del = $db->prepare("DELETE FROM master_lssm WHERE id = ?");
+                $del->execute([$id]);
+            }
+            echo json_encode(['status' => 'success', 'message' => 'Data LSSM berhasil dihapus.']);
+            exit;
+        }
+
         $stmt = $db->query("SELECT * FROM master_lssm ORDER BY no_urut ASC");
         echo json_encode(['status' => 'success', 'total' => $stmt->rowCount(), 'data' => $stmt->fetchAll()]);
         exit;
