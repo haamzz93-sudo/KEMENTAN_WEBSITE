@@ -1,0 +1,468 @@
+{
+  "bpsb": [
+    {
+      "no": 1,
+      "provinsi": "Aceh",
+      "nama": "UPTD BPSBTPHP Prov. Aceh",
+      "alamat": "Kota Banda Aceh, Prov. Aceh"
+    },
+    {
+      "no": 2,
+      "provinsi": "Sumatera Utara",
+      "nama": "UPTD. Sertifikasi Benih Tanaman Pangan dan Hortikultura  Dinas Pertanian dan Ketahanan Pangan Provinsi Sumatera Utara",
+      "alamat": "Jln. Jend. Besar Abdul Haris Nasution No.8 Pangkalan Masyhur Kec. Medan Johor Kota Medan Prov. Sumatera Utara"
+    },
+    {
+      "no": 3,
+      "provinsi": "Sumatera Barat",
+      "nama": "UPTD BPSBTPH Sumbar",
+      "alamat": "Jl. H. Amarullah Kotak Pos 30 Bukittinggi"
+    },
+    {
+      "no": 4,
+      "provinsi": "Riau",
+      "nama": "UPTPSBTPH Riau",
+      "alamat": "Jln. Kaharudin NST, No. 69 Simpang Tiga Pekanbaru"
+    },
+    {
+      "no": 5,
+      "provinsi": "Jambi",
+      "nama": "UPTD Balai Pengawasan Sertifikasi Perbenihan Tanaman Provinsi Jambi",
+      "alamat": "Jalan Jendral Sudirman No. 28 Thehok Kota Jambi"
+    },
+    {
+      "no": 6,
+      "provinsi": "Sumatera Selatan",
+      "nama": "UPTD BPSBTPH Prov. Sumsel",
+      "alamat": "Palembang"
+    },
+    {
+      "no": 7,
+      "provinsi": "Bengkulu",
+      "nama": "UPTD PPSBTPHP Provinsi Bengkulu",
+      "alamat": "Jl. RE Martadinata, Kampung Melayu, Kota Bengkulu"
+    },
+    {
+      "no": 8,
+      "provinsi": "Lampung",
+      "nama": "BPSBTPH Lampung",
+      "alamat": "Bandar Lampung"
+    },
+    {
+      "no": 9,
+      "provinsi": "Kepulauan Bangka Belitung",
+      "nama": "UPTD Pengawas dan Sertifikasi Mutu Benih Provinsi Kepulauan Bangka Belitung",
+      "alamat": "Jl. Raya Pangkalpinang - Mentok Km. 8, Desa Kace Kec. Mendo Barat Kab. Bangka"
+    },
+    {
+      "no": 10,
+      "provinsi": "Kepulauan Riau",
+      "nama": "BPPSP-TPHP Prov. Kepri",
+      "alamat": "Jln Tembeling Desa Toapaya Asri, Kec Toapaya Kabupaten Bintan Provinsi Kepulauan Riau"
+    },
+    {
+      "no": 11,
+      "provinsi": "DKI Jakarta",
+      "nama": "UPT Pusat Promosi dan Sertifikasi Hasil Pertanian Provinsi DKI Jakarta",
+      "alamat": "Jl. Raya Jambore No. 1 Cibubur Jakarta Timur"
+    },
+    {
+      "no": 12,
+      "provinsi": "Jawa Barat",
+      "nama": "BPSBTPH Prov. Jawa Barat",
+      "alamat": "Jl. Ciganitri II Kel. Lengkong, Kec. Bojongsoang Kab. Bandung"
+    },
+    {
+      "no": 13,
+      "provinsi": "Jawa Tengah",
+      "nama": "Balai Pengawasan dan Sertifikasi Benih Jawa Tengah",
+      "alamat": "Jalan Solo Yogya Km. 15, Sraten, Kec. Gatak, Kab.    Sukoharjo, Jawa Tengah, Kode Pos 57557"
+    },
+    {
+      "no": 14,
+      "provinsi": "DI Yogyakarta",
+      "nama": "Balai Pengembangan Perbenihan dan Pengawasan Mutu Benih Tanaman Pertanian",
+      "alamat": "Gowosari, Pajangan, Bantul, Yogyakarta"
+    },
+    {
+      "no": 15,
+      "provinsi": "Jawa Timur",
+      "nama": "UPT Pengawasan dan Sertifikasi Benih Tanaman Pangan dan Hortikultura, Jawa Timur",
+      "alamat": "Jalan Gayung Kebonsari 175. A Kota Surabaya"
+    },
+    {
+      "no": 16,
+      "provinsi": "Banten",
+      "nama": "UPTD Pengawasan dan Sertifikasi Benih Tanaman Pangan, Hortikultura dan Perkebunan",
+      "alamat": "Jl. Raya Cilegon Km. 4 Drangong Serang,"
+    },
+    {
+      "no": 17,
+      "provinsi": "Bali",
+      "nama": "UPTD BPSBTPHBUN Prov. Bali",
+      "alamat": "Jl. Raya Sesetan, Sesetan, Denpasar Selatan"
+    },
+    {
+      "no": 18,
+      "provinsi": "Nusa Tenggara Barat",
+      "nama": "UPTD BPSBP Prov. NTB",
+      "alamat": "UPTD BPSBP Prov. NTB"
+    },
+    {
+      "no": 19,
+      "provinsi": "Nusa Tenggara Timur",
+      "nama": "UPTD Pengawasan dan Sertifikasi Benih Tanaman Pangan Hortikultura dan Perkebunan Prov. NTT",
+      "alamat": "UPTD Pengawasan dan Sertifikasi Benih Tanaman Pangan Hortikultura dan Perkebunan Prov. NTT"
+    },
+    {
+      "no": 20,
+      "provinsi": "Kalimantan Barat",
+      "nama": "UPT. Pengawasan dan Sertifikasi Benih Prov. Kalbar",
+      "alamat": "Jl. Alianyang, Gg. Kurnia, No. 127, Pontianak, Kalimantan Barat, 78116"
+    },
+    {
+      "no": 21,
+      "provinsi": "Kalimantan Tengah",
+      "nama": "UPT Balai Pengawasan dan Sertifikasi Benih Tanaman Pangan dan Hortikultura Provinsi Kalimantan Tengah",
+      "alamat": "Jl. Cilik Riwut Km. 6,5 No. 90 Palangka Raya"
+    },
+    {
+      "no": 22,
+      "provinsi": "Kalimantan Selatan",
+      "nama": "BPSB TPH Prov. Kalsel",
+      "alamat": "Jl. Pangeran Suriansyah Ujung No. 63A, Banjarbaru, Kalimantan Selatan"
+    },
+    {
+      "no": 23,
+      "provinsi": "Kalimantan Timur",
+      "nama": "UPTD pengawasan sertifikasi be nih tanaman pangan dah hortikultura prop. Kalimantan Timur",
+      "alamat": "JL. P. M. Noor NO. 03 Kec. Samarinda Utara Kota Samarinda"
+    },
+    {
+      "no": 24,
+      "provinsi": "Sulawesi Utara",
+      "nama": "BPSB TPH Prov. Sulawesi Utara",
+      "alamat": "Jl. 17 Agustus, Manado"
+    },
+    {
+      "no": 25,
+      "provinsi": "Sulawesi Tengah",
+      "nama": "UPT Pengawasan Mutu dan Sertifikasi Benih Tanaman Pangan dan Hortikultura Provinsi Sulawesi Tengah",
+      "alamat": "Poros Palu Palolo Km 14 Sidera"
+    },
+    {
+      "no": 26,
+      "provinsi": "Sulawesi Selatan",
+      "nama": "UPT. Balai Sertifikasi Mutu Benih Tanaman Pangan dan Hortikultura Prov. Sulsel",
+      "alamat": "Jl. Dr. Ratulangi No. 71, Maros"
+    },
+    {
+      "no": 27,
+      "provinsi": "Sulawesi Tenggara",
+      "nama": "UPTD BPSBPH Provinsi Sultra",
+      "alamat": "Jl khairil Anwar no 6 puuwatu kec puuwatu kota kendari"
+    },
+    {
+      "no": 28,
+      "provinsi": "Gorontalo",
+      "nama": "UPTD. Balai Perbenihan Pengawasan Sertifikasi Benih Pertanian",
+      "alamat": "Jl. Prof Dr. Aloe Saboe Desa Toto Selatan Kec.Kabila Kab.Bone Bolango Prov.Gorontalo"
+    },
+    {
+      "no": 29,
+      "provinsi": "Sulawesi Barat",
+      "nama": "UPTD. Balai Pengawasan dan Sertifikasi Benih Tanaman Pangan & Hortikultura (UPTD BPSB TPH SULBAR)",
+      "alamat": "KOMPLEKS UPTD PERTANIAN SULBAR \nJl. Tapos No. 9 Pure Kel. Sinyonyoi Kec. Kalukku Kab. Mamuju Sulawesi Barat 91561"
+    },
+    {
+      "no": 30,
+      "provinsi": "Maluku",
+      "nama": "BPSB/Bibit Pertanian dan Peternakan Provinsi Maluku",
+      "alamat": "Jln. Wolter Monginsidi. Komplek Pertanian Passo - Ambon (97232)"
+    },
+    {
+      "no": 31,
+      "provinsi": "Maluku Utara",
+      "nama": "BP2STP (Balai Pengawasan Pengujian Mutu dan Sertifikasi Benih Tanaman Pertanian) Provinsi Maluku utara.",
+      "alamat": "Jl.Raya Kusu Kompleks Pertanian Desa Kusu kecamatan Oba Utara Kabupaten Tidore Kepulauan Provinsi Maluku Utara"
+    },
+    {
+      "no": 32,
+      "provinsi": "Papua Barat",
+      "nama": "UPTD Pengawasan dan Sertifikasi Benih Tanaman Pangan dan Hortikultura",
+      "alamat": "Jl. Poros Arfai Manokwari Papua Barat"
+    },
+    {
+      "no": 33,
+      "provinsi": "Papua",
+      "nama": "UPTD Balai Pengawasan dan Sertifikasi Benih Tanaman Pangan dan Hortikultura",
+      "alamat": "Kampung harapan sentani"
+    }
+  ],
+  "lssm": [
+    {
+      "no": 1,
+      "provinsi": "Sumatera Barat",
+      "nama": "UPBS Balai Perakitan dan Pengujian Tan. Buah Tropika",
+      "alamat": "Jl. Raya Solok-Aripan KM 8 Solok, Sumatera Barat"
+    },
+    {
+      "no": 2,
+      "provinsi": "Sumatera Utara",
+      "nama": "PT. Hijau Biotechindo",
+      "alamat": "Jl. Besar Sei Renggas, Kel. Sei Renggas, Kec. Kota Kisaran Barat, Kab. Asahan, Sumatera Utara"
+    },
+    {
+      "no": 3,
+      "provinsi": "DKI Jakarta",
+      "nama": "PT Primasid Andalan Utama",
+      "alamat": "Plaza Kelapa Gading (Rukan Inkopal) Blok C No. 48 Jl. Boulevard Barat Raya Kelapa Gading Jakarta utara"
+    },
+    {
+      "no": 4,
+      "provinsi": "DKI Jakarta",
+      "nama": "PT. Maju Makmur Utomo",
+      "alamat": "Jl. Sunter Paradise Raya 2 Blok F 21 No. C 27 Sunter Agung Podomoro Tanjung Priok Jakarta Utara"
+    },
+    {
+      "no": 5,
+      "provinsi": "Jawa Barat",
+      "nama": "UPBS Balai Perakitan dan Pengujian Tanaman Sayuran",
+      "alamat": "Jl. Tangkuban Perahu No. 517 Lembang, Bandung Barat"
+    },
+    {
+      "no": 6,
+      "provinsi": "Jawa Barat",
+      "nama": "UPBS Balai Perakitan dan Pengujian Tanaman Hias",
+      "alamat": "Jl. Raya Ciherang Segunung, Pacet, Cianjur, Jawa Barat"
+    },
+    {
+      "no": 7,
+      "provinsi": "Jawa Barat",
+      "nama": "PT Kentang Hollando Sejahtera",
+      "alamat": "Desa Kecamatan Tarumajaya, Kertasari, Kabupaten Bandung, Jawa Barat"
+    },
+    {
+      "no": 8,
+      "provinsi": "Jawa Barat",
+      "nama": "PT. Mahatani Pertiwi Sejahtera",
+      "alamat": "Jl. Calincing Raya no. 5 Perumahan Villa Citra Bantarjati Permai Tegal Gundil Bogor"
+    },
+    {
+      "no": 9,
+      "provinsi": "Jawa Barat",
+      "nama": "PT. Agra Intan Makmur Sejahtera",
+      "alamat": "Kampung Patrol Desa Cinta Karang Tengah Garut"
+    },
+    {
+      "no": 10,
+      "provinsi": "Jawa Barat",
+      "nama": "PT. Horti Agro Makro",
+      "alamat": "Alamat: Kampung Sanding no. 95 RT 01/03 Muara Sanding Garut Kota Garut Jawa Barat"
+    },
+    {
+      "no": 11,
+      "provinsi": "Jawa Barat",
+      "nama": "CV. Nusa Heulang",
+      "alamat": "Perum Oesman Singawinata Blok C4/5-6, Desa/Kelurahan Nagri Kaler, Kec. Purwakarta, Kab. Purwakarta, Jawa Barat"
+    },
+    {
+      "no": 12,
+      "provinsi": "Jawa Tengah",
+      "nama": "PT Tunas Agro Persada",
+      "alamat": "Jl. Raya Sayung KM 10 Semarang Jawa Tengah"
+    },
+    {
+      "no": 13,
+      "provinsi": "Jawa Tengah",
+      "nama": "PT Prabu Agro Mandiri",
+      "alamat": "Jl. Irigasi No. 3 Sukamulya, Purwakarta, Jawa Barat"
+    },
+    {
+      "no": 14,
+      "provinsi": "Jawa Tengah",
+      "nama": "PT Oriental Seed Indonesia",
+      "alamat": "Dusun Kamal RT 02 RW 04 Pagersari Mungkid, Magelang, Jawa Tengah"
+    },
+    {
+      "no": 15,
+      "provinsi": "Jawa Tengah",
+      "nama": "PT. Known-You Seed Indonesia",
+      "alamat": "Jl. Raya Wonosobo-Kertek Km 6 Wonosobo Jawa Tengah"
+    },
+    {
+      "no": 16,
+      "provinsi": "Jawa Tengah",
+      "nama": "CV. Tani Graha Sejahtera",
+      "alamat": "Dsn. Karanganyar, RT. 42, RW. 15, Ds. Mranggen, Kec. Jatinom, Kab. Klaten – Jawa Tengah"
+    },
+    {
+      "no": 17,
+      "provinsi": "Jawa Tengah",
+      "nama": "CV. Everfresh",
+      "alamat": "Jl. Sruwen-Karanggede Km3, Dsn.Rekesan RT 023/RW 005, Ds. Sugihan, Kec. Tengaran, Kab. Semarang, Jawa Tengah"
+    },
+    {
+      "no": 18,
+      "provinsi": "DI Yogyakarta",
+      "nama": "PT Royal Agro Persada",
+      "alamat": "Jl. Persada No. 4 Bromonilan, Purwomartani, Kalasa, Sleman 55221 Jogjakarta"
+    },
+    {
+      "no": 19,
+      "provinsi": "DI Yogyakarta",
+      "nama": "PT Raja Pilar Agrotama",
+      "alamat": "Jl. Imogiri Barat Km. 7 Semail, RT. 06 Banguharjo, Sewon, Bantul Jogjakrta"
+    },
+    {
+      "no": 20,
+      "provinsi": "DI Yogyakarta",
+      "nama": "PT Dinasty Inti Agrosarana",
+      "alamat": "010 Baturetno, Banguntapan, Bantul, DI Yogyakarta"
+    },
+    {
+      "no": 21,
+      "provinsi": "DI Yogyakarta",
+      "nama": "CV Jogja Horti Lestar",
+      "alamat": "Jl. Kaliurang Km 11 Pedak, Sinduharjo, Ngaglik, Sleman, DI Yogyakarta"
+    },
+    {
+      "no": 22,
+      "provinsi": "DI Yogyakarta",
+      "nama": "PT Tani Murni Indonesia",
+      "alamat": "Jl. Kaliurang KM 18 Padasan, Duwetsari, Pakembinangun, Pakem, Sleman, Yogyakarta"
+    },
+    {
+      "no": 23,
+      "provinsi": "DI Yogyakarta",
+      "nama": "CV Tunas Java Mandiri",
+      "alamat": "Gondangan RT 01, Tirtomulyo, Kretek, Bantul, DI Yogyakarta"
+    },
+    {
+      "no": 24,
+      "provinsi": "DI Yogyakarta",
+      "nama": "PT. Hibrida Jaya Unggul",
+      "alamat": "Ruko Perwita Regency Blok B-10, Jl. Parangtritis, KM 3,5 Sewon Bantul, Yogyakarta"
+    },
+    {
+      "no": 25,
+      "provinsi": "Jawa Timur",
+      "nama": "PT Aditya Sentana Agro",
+      "alamat": "Jl. Zentana 87 Karangploso, Malang, Jawa Timur"
+    },
+    {
+      "no": 26,
+      "provinsi": "Jawa Timur",
+      "nama": "CV Aura Seed Indonesia",
+      "alamat": "Jl. Ki Hajar Dewantara No. 207 Bringin Badas PO Box 139 Pare, Kediri, Jawa Timur"
+    },
+    {
+      "no": 27,
+      "provinsi": "Jawa Timur",
+      "nama": "UPBS Balai Perakitan dan Pengujian Tanaman Jeruk dan Buah Subtropika",
+      "alamat": "Jl. Raya Tlekung No. 1 Junrejo, Batu, Jawa Timur"
+    },
+    {
+      "no": 28,
+      "provinsi": "Jawa Timur",
+      "nama": "PT Saribenih Unggul",
+      "alamat": "Jalan Jemursari No. 73, Surabaya"
+    },
+    {
+      "no": 29,
+      "provinsi": "Jawa Timur",
+      "nama": "PT Koreana Seed Indonesia",
+      "alamat": "Dusun Bendorejo, Desa Tawang, Kec. Wates, Kediri, Jawa Timur"
+    },
+    {
+      "no": 30,
+      "provinsi": "Jawa Timur",
+      "nama": "CV Satya Agro Mandiri",
+      "alamat": "Jl. Jatisari-Jatiagung RT 003 RW 019 Dusun Jatiagung, Desa Gumukmas, Gumukmas, Jember, Jawa Timur"
+    },
+    {
+      "no": 31,
+      "provinsi": "Jawa Timur",
+      "nama": "PT Wira Agro Nusantara Sejahtera",
+      "alamat": "Jl. Pepaya No. 03 B, Kel. Pare, Kec. Pare, Kediri, Jawa Timur"
+    },
+    {
+      "no": 32,
+      "provinsi": "Jawa Timur",
+      "nama": "PT Dewa Danu Group",
+      "alamat": "Jl. Diponegoro No. 423 RT 009/RW 003 Ds Uteran, Kec. Geger, Madiun, Jawa Timur"
+    },
+    {
+      "no": 33,
+      "provinsi": "Jawa Timur",
+      "nama": "PT Alam Semesta Agro",
+      "alamat": "Jl Teuku Umar RT 031/RW 009 Dusun Ngadirejo, Desa Dukuh, Ngadiluwih, Kediri, Jawa Timur"
+    },
+    {
+      "no": 34,
+      "provinsi": "Jawa Timur",
+      "nama": "PT. Nikos Jaya Benih Unggul",
+      "alamat": "Dusun Sumber Gondang RT 02/02 Desa Sumber Kerep, Mantup Lamongan Jawa Timur"
+    },
+    {
+      "no": 35,
+      "provinsi": "Jawa Timur",
+      "nama": "CV. Enno Corporation",
+      "alamat": "Jl. Citarum No 05, Banjarejo, Tembokrejo, Gumukmas, Jember"
+    },
+    {
+      "no": 36,
+      "provinsi": "Jawa Timur",
+      "nama": "CV. Agro Bumi Asri Sejahtera",
+      "alamat": "Ds. Sumberjo RT. 02, RW. 03, No. 99, Sumberjo Sanankulon - Blitar"
+    },
+    {
+      "no": 37,
+      "provinsi": "Jawa Timur",
+      "nama": "PT. Sampoerna Jaya Agro",
+      "alamat": "Jl. Semeru Km. 4, Jember-Jawa Timur"
+    },
+    {
+      "no": 38,
+      "provinsi": "Jawa Timur",
+      "nama": "PT. Benih Unggul Sejati",
+      "alamat": "Jl. HM. Noer, Dsn Rowo RT 01/RW 01, Desa Rowo Indah, Kec. Ajung, Kab. Jember – Jawa Timur"
+    },
+    {
+      "no": 39,
+      "provinsi": "Jawa Timur",
+      "nama": "Polije Seed Center",
+      "alamat": "Jl. Mastrip Kotak Pos 164-Jember"
+    },
+    {
+      "no": 40,
+      "provinsi": "Jawa Timur",
+      "nama": "PT. Global Agro Mandiri Indonesia",
+      "alamat": "Perum d'Kebonsari Village Blok Alamanda No.5, Jember-Jawa Timur"
+    },
+    {
+      "no": 41,
+      "provinsi": "Jawa Timur",
+      "nama": "CV. Halbanero",
+      "alamat": "Jl. Harinjing No.166, Sumber Pancur, Kepung, Kec. Kepung, Kab. Kediri, Jawa Timur"
+    },
+    {
+      "no": 42,
+      "provinsi": "Jawa Timur",
+      "nama": "PT. Benih Kelud Nusantara",
+      "alamat": "Dusun Kaligedok RT 028/RW 007, Desa Margourip Kec. Ngancar, Kab. Kediri-Jawa Timur"
+    },
+    {
+      "no": 43,
+      "provinsi": "Jawa Timur",
+      "nama": "CV. Triasputra Agro Maju Sejahtera",
+      "alamat": "Dusun Wetan, Desa Balung Lor, kecamatan Balung, Kab. Jember, Jawa Timur"
+    },
+    {
+      "no": 44,
+      "provinsi": "Kalimantan Timur",
+      "nama": "UPTD Balai Benih Induk Tanaman Pangan dan Hortikultura Provinsi Kalimantan Timur",
+      "alamat": "Jl Soekarno Hatta KM 40, Desa Batuah, Luajanan, Kutai Kartanegara, Kalimantan Timur"
+    }
+  ]
+}
