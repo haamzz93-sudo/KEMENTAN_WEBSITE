@@ -8,7 +8,8 @@ export async function POST(req: NextRequest) {
     // Forward request to backend PHP server
     let backendRes = null;
     try {
-      backendRes = await fetch('/api/auth/logout', {
+      const backendUrl = process.env.BACKEND_INTERNAL_URL || 'http://127.0.0.1:8000';
+      backendRes = await fetch(`${backendUrl}/api/auth/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
