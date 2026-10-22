@@ -22,6 +22,7 @@ import {
   ArrowRight,
   Trash2
 } from 'lucide-react';
+import CustomDropdown from '@/components/ui/CustomDropdown';
 import { INITIAL_VARIETY_APPLICATIONS, COMMODITIES_BY_CATEGORY } from '@/data/masterData';
 import { VarietyApplication, PlantCategory, TP2VHSessionStatus } from '@/types';
 
@@ -644,29 +645,31 @@ export default function VarietyRegistrationPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Tipe Instansi *</label>
-                  <select
+                  <CustomDropdown
+                    options={[
+                      { value: 'swasta', label: 'Badan Usaha Swasta' },
+                      { value: 'pemerintah', label: 'Instansi Pemerintah / BRIN' },
+                      { value: 'perseorangan', label: 'Pemulia Perseorangan' },
+                    ]}
                     value={noticeForm.institutionType}
-                    onChange={(e) => setNoticeForm({ ...noticeForm, institutionType: e.target.value as any })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                  >
-                    <option value="swasta">Badan Usaha Swasta</option>
-                    <option value="pemerintah">Instansi Pemerintah / BRIN</option>
-                    <option value="perseorangan">Pemulia Perseorangan</option>
-                  </select>
+                    onChange={(val) => setNoticeForm({ ...noticeForm, institutionType: val as any })}
+                    placeholder="Pilih Tipe Instansi..."
+                  />
                 </div>
 
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Kategori Tanaman *</label>
-                  <select
+                  <CustomDropdown
+                    options={[
+                      { value: 'sayuran', label: 'Tanaman Sayuran' },
+                      { value: 'buah', label: 'Tanaman Buah' },
+                      { value: 'hias', label: 'Tanaman Hias' },
+                      { value: 'obat', label: 'Tanaman Obat' },
+                    ]}
                     value={noticeForm.cropType}
-                    onChange={(e) => setNoticeForm({ ...noticeForm, cropType: e.target.value as any })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none capitalize"
-                  >
-                    <option value="sayuran">Tanaman Sayuran</option>
-                    <option value="buah">Tanaman Buah</option>
-                    <option value="hias">Tanaman Hias</option>
-                    <option value="obat">Tanaman Obat</option>
-                  </select>
+                    onChange={(val) => setNoticeForm({ ...noticeForm, cropType: val as any })}
+                    placeholder="Pilih Kategori..."
+                  />
                 </div>
               </div>
 

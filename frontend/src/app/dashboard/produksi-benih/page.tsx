@@ -22,6 +22,7 @@ import {
   Lock,
   UserCheck
 } from 'lucide-react';
+import CustomDropdown, { DropdownOption } from '@/components/ui/CustomDropdown';
 import { PROVINCES_INDONESIA, COMMODITIES_BY_CATEGORY, INITIAL_SEED_PRODUCTIONS, INITIAL_PRODUCERS, getStoredCommodities, saveStoredCommodities } from '@/data/masterData';
 import { MonthlySeedProduction, PlantCategory, SeedClass, SeedUnit, UserRole } from '@/types';
 
@@ -356,17 +357,19 @@ export default function SeedProductionBalancePage() {
 
           {/* Commodity Category Filter */}
           <div className="md:col-span-5">
-            <select
+            <CustomDropdown
+              options={[
+                { value: 'semua', label: 'Semua Kategori (Sayuran, Buah, Hias, Biofarmaka)' },
+                { value: 'sayuran', label: 'Tanaman Sayuran' },
+                { value: 'buah', label: 'Tanaman Buah' },
+                { value: 'hias', label: 'Tanaman Hias' },
+                { value: 'obat', label: 'Tanaman Obat / Biofarmaka' },
+              ]}
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value as PlantCategory | 'semua')}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:border-emerald-600 outline-none bg-white font-medium"
-            >
-              <option value="semua">Semua Kategori (Sayuran, Buah, Hias, Biofarmaka)</option>
-              <option value="sayuran">Tanaman Sayuran</option>
-              <option value="buah">Tanaman Buah</option>
-              <option value="hias">Tanaman Hias</option>
-              <option value="obat">Tanaman Obat / Biofarmaka</option>
-            </select>
+              onChange={(val) => setSelectedCategory(val as PlantCategory | 'semua')}
+              placeholder="Filter Kategori Tanaman"
+              size="sm"
+            />
           </div>
 
           {/* Entity Filter */}
@@ -601,19 +604,28 @@ export default function SeedProductionBalancePage() {
                     <label className="block font-semibold text-slate-700 mb-1">
                       Pilih Produsen Benih Binaan yang Dilaporkan *
                     </label>
-                    <select
-                      name="selectedProducerId"
-                      value={formData.selectedProducerId}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                    >
-                      {INITIAL_PRODUCERS.map(p => (
-                        <option key={p.id} value={p.id}>
-                          {p.businessName} ({p.province} - {p.commodity})
-                        </option>
-                      ))}
-                      <option value="custom">+ Entri Produsen Baru / Lainnya</option>
-                    </select>
+                    <CustomDropdown
+                      options={[
+                        ...INITIAL_PRODUCERS.map(p => ({
+                          value: String(p.id),
+                          label: `${p.businessName} (${p.province})`,
+                          description: `Komoditas: ${p.commodity}`
+                        })),
+                        { value: 'custom', label: '+ Entri Produsen Baru / Lainnya', badge: 'Kustom' }
+                      ]}
+                      value={String(formData.selectedProducerId)}
+                      onChange={(val) => {
+                        const isCustom = val === 'custom';
+                        const selectedProd = INITIAL_PRODUCERS.find(p => String(p.id) === val);
+                        setFormData(prev => ({
+                          ...prev,
+                          selectedProducerId: val,
+                          province: selectedProd ? selectedProd.province : prev.province,
+                          regency: selectedProd ? selectedProd.regency : prev.regency
+                        }));
+                      }}
+                      placeholder="Pilih Produsen Benih..."
+                    />
 
                     {formData.selectedProducerId === 'custom' && (
                       <input
@@ -631,16 +643,12 @@ export default function SeedProductionBalancePage() {
                 {/* Provinsi */}
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Provinsi *</label>
-                  <select
-                    name="province"
+                  <CustomDropdown
+                    options={PROVINCES_INDONESIA.map(prov => ({ value: prov, label: prov }))}
                     value={formData.province}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                  >
-                    {PROVINCES_INDONESIA.map(prov => (
-                      <option key={prov} value={prov}>{prov}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setFormData(prev => ({ ...prev, province: val }))}
+                    placeholder="Pilih Provinsi..."
+                  />
                 </div>
 
                 {/* Kabupaten / Kota */}
@@ -659,34 +667,38 @@ export default function SeedProductionBalancePage() {
                 {/* Kategori Tanaman */}
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Jenis Tanaman (4 Kategori) *</label>
-                  <select
-                    name="category"
+                  <CustomDropdown
+                    options={[
+                      { value: 'sayuran', label: 'Tanaman Sayuran' },
+                      { value: 'buah', label: 'Tanaman Buah' },
+                      { value: 'hias', label: 'Tanaman Hias' },
+                      { value: 'obat', label: 'Tanaman Obat / Biofarmaka' },
+                    ]}
                     value={formData.category}
-                    onChange={(e) => handleCategoryChange(e.target.value as PlantCategory)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none capitalize"
-                  >
-                    <option value="sayuran">Tanaman Sayuran</option>
-                    <option value="buah">Tanaman Buah</option>
-                    <option value="hias">Tanaman Hias</option>
-                    <option value="obat">Tanaman Obat / Biofarmaka</option>
-                  </select>
+                    onChange={(val) => handleCategoryChange(val as PlantCategory)}
+                    placeholder="Pilih Kategori..."
+                  />
                 </div>
 
                 {/* Komoditas (PILIHAN MASTER DATA ATAU INPUT KUSTOM) */}
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Komoditas Hortikultura *</label>
                   {!isCustomCommodity ? (
-                    <select
-                      name="commodity"
+                    <CustomDropdown
+                      options={[
+                        ...(commoditiesData[formData.category] || COMMODITIES_BY_CATEGORY[formData.category] || []).map(c => ({
+                          value: c.name,
+                          label: c.name,
+                          badge: c.unit,
+                          description: c.varietyExamples ? `Varietas: ${c.varietyExamples}` : undefined
+                        })),
+                        { value: '__custom__', label: '+ Tambah / Ketik Komoditas Lainnya...', badge: 'Baru' }
+                      ]}
                       value={formData.commodity}
-                      onChange={(e) => handleCommoditySelect(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                    >
-                      {(commoditiesData[formData.category] || COMMODITIES_BY_CATEGORY[formData.category] || []).map(c => (
-                        <option key={c.name} value={c.name}>{c.name}</option>
-                      ))}
-                      <option value="__custom__">+ Tambah / Ketik Komoditas Lainnya...</option>
-                    </select>
+                      onChange={(val) => handleCommoditySelect(val)}
+                      placeholder="Pilih Komoditas..."
+                      searchPlaceholder="Cari nama komoditas..."
+                    />
                   ) : (
                     <div className="flex space-x-1">
                       <input
@@ -716,7 +728,7 @@ export default function SeedProductionBalancePage() {
                     value={formData.variety}
                     onChange={handleInputChange}
                     placeholder="Contoh: Tanjung-2"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-xs outline-none"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-xs outline-none"
                   />
                 </div>
 
@@ -724,34 +736,34 @@ export default function SeedProductionBalancePage() {
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="block font-semibold text-slate-700 mb-1">Kelas Benih *</label>
-                    <select
-                      name="seedClass"
+                    <CustomDropdown
+                      options={[
+                        { value: 'BS', label: 'BS (Penjenis)', badge: 'Kuning' },
+                        { value: 'BD', label: 'BD (Dasar)', badge: 'Putih' },
+                        { value: 'BP', label: 'BP (Pokok)', badge: 'Ungu' },
+                        { value: 'BR', label: 'BR (Sebar)', badge: 'Biru' },
+                      ]}
                       value={formData.seedClass}
-                      onChange={handleInputChange}
-                      className="w-full px-2 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none font-bold"
-                    >
-                      <option value="BS">BS (Penjenis)</option>
-                      <option value="BD">BD (Dasar)</option>
-                      <option value="BP">BP (Pokok)</option>
-                      <option value="BR">BR (Sebar)</option>
-                    </select>
+                      onChange={(val) => setFormData(prev => ({ ...prev, seedClass: val as SeedClass }))}
+                      placeholder="Kelas Benih"
+                    />
                   </div>
 
                   <div>
                     <label className="block font-semibold text-slate-700 mb-1">Satuan *</label>
-                    <select
-                      name="unit"
+                    <CustomDropdown
+                      options={[
+                        { value: 'kg', label: 'kg' },
+                        { value: 'batang', label: 'batang' },
+                        { value: 'knol', label: 'knol' },
+                        { value: 'planlet', label: 'planlet' },
+                        { value: 'stek', label: 'stek' },
+                        { value: 'anakan', label: 'anakan' },
+                      ]}
                       value={formData.unit}
-                      onChange={handleInputChange}
-                      className="w-full px-2 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none uppercase font-bold"
-                    >
-                      <option value="kg">kg</option>
-                      <option value="batang">batang</option>
-                      <option value="knol">knol</option>
-                      <option value="planlet">planlet</option>
-                      <option value="stek">stek</option>
-                      <option value="anakan">anakan</option>
-                    </select>
+                      onChange={(val) => setFormData(prev => ({ ...prev, unit: val as SeedUnit }))}
+                      placeholder="Satuan"
+                    />
                   </div>
                 </div>
 

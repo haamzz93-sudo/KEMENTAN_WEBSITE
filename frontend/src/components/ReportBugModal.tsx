@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Bug, X, Send, CheckCircle2, AlertTriangle, MessageSquare } from 'lucide-react';
+import CustomDropdown from '@/components/ui/CustomDropdown';
 
 interface ReportBugModalProps {
   isOpen: boolean;
@@ -126,32 +127,36 @@ export default function ReportBugModal({
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Kategori Kendala
                 </label>
-                <select
+                <CustomDropdown
+                  options={[
+                    { value: 'bug', label: 'Error / Bug Fungsi' },
+                    { value: 'ui', label: 'Masalah Tampilan / UI' },
+                    { value: 'account', label: 'Kendala Login / Akun' },
+                    { value: 'suggestion', label: 'Saran Peningkatan' },
+                  ]}
                   value={category}
-                  onChange={(e) => setCategory(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl outline-none focus:border-emerald-600 text-xs"
-                >
-                  <option value="bug">Error / Bug Fungsi</option>
-                  <option value="ui">Masalah Tampilan / UI</option>
-                  <option value="account">Kendala Login / Akun</option>
-                  <option value="suggestion">Saran Peningkatan</option>
-                </select>
+                  onChange={(val) => setCategory(val as any)}
+                  placeholder="Kategori Kendala"
+                  size="sm"
+                />
               </div>
 
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Tingkat Urgensi
                 </label>
-                <select
+                <CustomDropdown
+                  options={[
+                    { value: 'low', label: 'Rendah (Kosmetik)', badge: 'Rendah' },
+                    { value: 'medium', label: 'Sedang (Kendala Biasa)', badge: 'Sedang' },
+                    { value: 'high', label: 'Tinggi (Fitur Terganggu)', badge: 'Tinggi', badgeColor: 'bg-amber-100 text-amber-800' },
+                    { value: 'critical', label: 'Kritis (Sistem Terhenti)', badge: 'Kritis', badgeColor: 'bg-red-100 text-red-800' },
+                  ]}
                   value={severity}
-                  onChange={(e) => setSeverity(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl outline-none focus:border-emerald-600 text-xs"
-                >
-                  <option value="low">Rendah (Kosmetik)</option>
-                  <option value="medium">Sedang (Kendala Biasa)</option>
-                  <option value="high">Tinggi (Fitur Terganggu)</option>
-                  <option value="critical">Kritis (Sistem Terhenti)</option>
-                </select>
+                  onChange={(val) => setSeverity(val as any)}
+                  placeholder="Urgensi"
+                  size="sm"
+                />
               </div>
             </div>
 

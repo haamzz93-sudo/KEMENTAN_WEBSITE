@@ -22,6 +22,7 @@ import {
   Layers,
   MapPin
 } from 'lucide-react';
+import CustomDropdown, { DropdownOption } from '@/components/ui/CustomDropdown';
 import { PROVINCES_INDONESIA, COMMODITIES_BY_CATEGORY, INITIAL_PRODUCERS, getStoredCommodities, saveStoredCommodities } from '@/data/masterData';
 import { ProducerDistributor, SeedUnit } from '@/types';
 
@@ -449,16 +450,16 @@ export default function ProducerDistributorPage() {
 
           {/* Province Filter */}
           <div className="md:col-span-4">
-            <select
+            <CustomDropdown
+              options={[
+                { value: 'Semua', label: 'Semua Provinsi (38 BPSB Wilayah)' },
+                ...PROVINCES_INDONESIA.map(prov => ({ value: prov, label: prov }))
+              ]}
               value={selectedProvince}
-              onChange={(e) => setSelectedProvince(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none bg-white transition-all font-medium"
-            >
-              <option value="Semua">Semua Provinsi (38 BPSB Wilayah)</option>
-              {PROVINCES_INDONESIA.map(prov => (
-                <option key={prov} value={prov}>{prov}</option>
-              ))}
-            </select>
+              onChange={setSelectedProvince}
+              placeholder="Filter Provinsi Wilayah..."
+              size="sm"
+            />
           </div>
 
           {/* Role Filter */}
@@ -803,29 +804,29 @@ export default function ProducerDistributorPage() {
                 {/* Peran Usaha */}
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Status Peran Usaha *</label>
-                  <select
-                    name="roleType"
+                  <CustomDropdown
+                    options={[
+                      { value: 'produsen', label: 'Produsen Benih (Penangkar)' },
+                      { value: 'pengedar', label: 'Pengedar Benih (Distributor)' },
+                    ]}
                     value={formData.roleType}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                  >
-                    <option value="produsen">Produsen Benih (Penangkar)</option>
-                    <option value="pengedar">Pengedar Benih (Distributor)</option>
-                  </select>
+                    onChange={(val) => setFormData(prev => ({ ...prev, roleType: val as any }))}
+                    placeholder="Pilih Peran Usaha..."
+                  />
                 </div>
 
                 {/* Jenis Pengajuan */}
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Status Pengajuan *</label>
-                  <select
-                    name="applicationType"
+                  <CustomDropdown
+                    options={[
+                      { value: 'baru', label: 'Pengajuan Baru' },
+                      { value: 'perpanjangan', label: 'Perpanjangan Sertifikat' },
+                    ]}
                     value={formData.applicationType}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                  >
-                    <option value="baru">Pengajuan Baru</option>
-                    <option value="perpanjangan">Perpanjangan Sertifikat</option>
-                  </select>
+                    onChange={(val) => setFormData(prev => ({ ...prev, applicationType: val as any }))}
+                    placeholder="Pilih Status Pengajuan..."
+                  />
                 </div>
 
                 {/* Nama Badan Usaha */}
@@ -918,16 +919,12 @@ export default function ProducerDistributorPage() {
                 {/* Provinsi */}
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Provinsi (Wilayah BPSB) *</label>
-                  <select
-                    name="province"
+                  <CustomDropdown
+                    options={PROVINCES_INDONESIA.map(prov => ({ value: prov, label: prov }))}
                     value={formData.province}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                  >
-                    {PROVINCES_INDONESIA.map(prov => (
-                      <option key={prov} value={prov}>{prov}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setFormData(prev => ({ ...prev, province: val }))}
+                    placeholder="Pilih Provinsi..."
+                  />
                 </div>
 
                 {/* Kabupaten / Kota */}
@@ -940,7 +937,7 @@ export default function ProducerDistributorPage() {
                     value={formData.regency}
                     onChange={handleInputChange}
                     placeholder="Contoh: Kabupaten Cianjur"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-xs outline-none"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-xs outline-none"
                   />
                 </div>
 
@@ -953,19 +950,42 @@ export default function ProducerDistributorPage() {
                     value={formData.address}
                     onChange={handleInputChange}
                     placeholder="Alamat lengkap lokasi perbenihan..."
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-xs outline-none"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 text-xs outline-none"
                   />
                 </div>
 
                 {/* Komoditas */}
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Komoditas Hortikultura *</label>
-                  <select
-                    name="commodity"
+                  <CustomDropdown
+                    options={[
+                      ...(commoditiesData.sayuran || COMMODITIES_BY_CATEGORY.sayuran).map(c => ({
+                        value: c.name,
+                        label: c.name,
+                        badge: 'Sayuran',
+                        badgeColor: 'bg-emerald-100 text-emerald-800'
+                      })),
+                      ...(commoditiesData.buah || COMMODITIES_BY_CATEGORY.buah).map(c => ({
+                        value: c.name,
+                        label: c.name,
+                        badge: 'Buah',
+                        badgeColor: 'bg-amber-100 text-amber-800'
+                      })),
+                      ...(commoditiesData.hias || COMMODITIES_BY_CATEGORY.hias).map(c => ({
+                        value: c.name,
+                        label: c.name,
+                        badge: 'Hias',
+                        badgeColor: 'bg-purple-100 text-purple-800'
+                      })),
+                      ...(commoditiesData.obat || COMMODITIES_BY_CATEGORY.obat).map(c => ({
+                        value: c.name,
+                        label: c.name,
+                        badge: 'Obat',
+                        badgeColor: 'bg-teal-100 text-teal-800'
+                      }))
+                    ]}
                     value={formData.commodity}
-                    onChange={(e) => {
-                      const selected = e.target.value;
-                      // Find default unit
+                    onChange={(selected) => {
                       let foundUnit: SeedUnit = 'kg';
                       for (const cat of ['sayuran', 'buah', 'hias', 'obat'] as const) {
                         const item = (commoditiesData[cat] || []).find(c => c.name === selected);
@@ -976,29 +996,9 @@ export default function ProducerDistributorPage() {
                       }
                       setFormData(prev => ({ ...prev, commodity: selected, unit: foundUnit }));
                     }}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                  >
-                    <optgroup label="Tanaman Sayuran (Hortikultura Pangan)">
-                      {(commoditiesData.sayuran || COMMODITIES_BY_CATEGORY.sayuran).map(c => (
-                        <option key={c.name} value={c.name}>[Sayur] {c.name}</option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="Tanaman Buah (Hortikultura Buah Tropika)">
-                      {(commoditiesData.buah || COMMODITIES_BY_CATEGORY.buah).map(c => (
-                        <option key={c.name} value={c.name}>[Buah] {c.name}</option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="Tanaman Hias (Florikultura)">
-                      {(commoditiesData.hias || COMMODITIES_BY_CATEGORY.hias).map(c => (
-                        <option key={c.name} value={c.name}>[Hias] {c.name}</option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="Tanaman Obat (Biofarmaka)">
-                      {(commoditiesData.obat || COMMODITIES_BY_CATEGORY.obat).map(c => (
-                        <option key={c.name} value={c.name}>[Obat] {c.name}</option>
-                      ))}
-                    </optgroup>
-                  </select>
+                    placeholder="Pilih Komoditas..."
+                    searchPlaceholder="Cari komoditas..."
+                  />
                 </div>
 
                 {/* Varietas */}
@@ -1036,21 +1036,23 @@ export default function ProducerDistributorPage() {
                       name="annualCapacity"
                       value={formData.annualCapacity}
                       onChange={handleInputChange}
-                      className="flex-1 px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
+                      className="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs outline-none"
                     />
-                    <select
-                      name="unit"
-                      value={formData.unit}
-                      onChange={handleInputChange}
-                      className="w-24 px-2 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                    >
-                      <option value="kg">kg</option>
-                      <option value="batang">batang</option>
-                      <option value="knol">knol</option>
-                      <option value="planlet">planlet</option>
-                      <option value="stek">stek</option>
-                      <option value="anakan">anakan</option>
-                    </select>
+                    <div className="w-32">
+                      <CustomDropdown
+                        options={[
+                          { value: 'kg', label: 'kg' },
+                          { value: 'batang', label: 'batang' },
+                          { value: 'knol', label: 'knol' },
+                          { value: 'planlet', label: 'planlet' },
+                          { value: 'stek', label: 'stek' },
+                          { value: 'anakan', label: 'anakan' },
+                        ]}
+                        value={formData.unit}
+                        onChange={(val) => setFormData(prev => ({ ...prev, unit: val as SeedUnit }))}
+                        placeholder="Satuan"
+                      />
+                    </div>
                   </div>
                 </div>
 

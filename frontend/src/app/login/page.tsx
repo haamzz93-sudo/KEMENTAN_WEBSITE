@@ -19,6 +19,7 @@ import {
   FileCheck,
   UserPlus
 } from 'lucide-react';
+import CustomDropdown from '@/components/ui/CustomDropdown';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -355,15 +356,17 @@ export default function LoginPage() {
                     <label className="text-[11px] font-bold text-slate-700 block mb-1">
                       Kategori Akun Pemohon *
                     </label>
-                    <select
+                    <CustomDropdown
+                      options={[
+                        { value: 'produsen_smm', label: 'Produsen Benih Bersertifikat SMM (Modul B & C)', badge: 'SMM' },
+                        { value: 'pemohon_varietas', label: 'Pemohon Varietas Mandiri / Penangkar (Modul C)', badge: 'Varietas' },
+                        { value: 'perusahaan', label: 'Badan Usaha / PT / CV Perbenihan Hortikultura', badge: 'Badan Usaha' },
+                      ]}
                       value={regForm.entity_type}
-                      onChange={(e) => setRegForm({...regForm, entity_type: e.target.value})}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl text-xs outline-none focus:border-emerald-600 focus:bg-white"
-                    >
-                      <option value="produsen_smm">Produsen Benih Bersertifikat SMM (Modul B & C)</option>
-                      <option value="pemohon_varietas">Pemohon Varietas Mandiri / Penangkar (Modul C)</option>
-                      <option value="perusahaan">Badan Usaha / PT / CV Perbenihan Hortikultura</option>
-                    </select>
+                      onChange={(val) => setRegForm({...regForm, entity_type: val})}
+                      placeholder="Pilih Kategori Pemohon..."
+                      size="sm"
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">

@@ -1543,19 +1543,20 @@ export default function MasterDataPage() {
                 <label className="block font-semibold text-slate-700 mb-1">
                   Kategori Tanaman *
                 </label>
-                <select
+                <CustomDropdown
+                  options={[
+                    { value: 'sayuran', label: 'Tanaman Sayuran (Hortikultura Pangan)' },
+                    { value: 'buah', label: 'Tanaman Buah (Hortikultura Buah Tropika)' },
+                    { value: 'hias', label: 'Tanaman Hias (Florikultura)' },
+                    { value: 'obat', label: 'Tanaman Obat (Biofarmaka)' },
+                  ]}
                   value={commodityModal.category}
-                  onChange={(e) => setCommodityModal(prev => ({
+                  onChange={(val) => setCommodityModal(prev => ({
                     ...prev,
-                    category: e.target.value as any
+                    category: val as any
                   }))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs outline-none capitalize"
-                >
-                  <option value="sayuran">Tanaman Sayuran (Hortikultura Pangan)</option>
-                  <option value="buah">Tanaman Buah (Hortikultura Buah Tropika)</option>
-                  <option value="hias">Tanaman Hias (Florikultura)</option>
-                  <option value="obat">Tanaman Obat (Biofarmaka)</option>
-                </select>
+                  placeholder="Pilih Kategori Tanaman..."
+                />
               </div>
 
               <div>
@@ -1579,21 +1580,22 @@ export default function MasterDataPage() {
                 <label className="block font-semibold text-slate-700 mb-1">
                   Satuan Standar Pelaporan *
                 </label>
-                <select
+                <CustomDropdown
+                  options={[
+                    { value: 'kg', label: 'kg (Kilogram) - Sayuran, buah kecil, rimpang' },
+                    { value: 'batang', label: 'batang - Bibit pohon buah, pohon keras' },
+                    { value: 'knol', label: 'knol - Umbi benih vegetatif (Kentang)' },
+                    { value: 'stek', label: 'stek - Perbanyakan vegetatif mikro / stek' },
+                    { value: 'planlet', label: 'planlet - Kultur jaringan lab (Anggrek)' },
+                    { value: 'anakan', label: 'anakan - Tunas anakan (Pisang, Nenas)' },
+                  ]}
                   value={commodityModal.item.unit}
-                  onChange={(e) => setCommodityModal(prev => ({
+                  onChange={(val) => setCommodityModal(prev => ({
                     ...prev,
-                    item: { ...prev.item, unit: e.target.value }
+                    item: { ...prev.item, unit: val }
                   }))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                >
-                  <option value="kg">kg (Kilogram) - Sayuran, buah kecil, rimpang</option>
-                  <option value="batang">batang - Bibit pohon buah, pohon keras</option>
-                  <option value="knol">knol - Umbi benih vegetatif (Kentang)</option>
-                  <option value="stek">stek - Perbanyakan vegetatif mikro / stek</option>
-                  <option value="planlet">planlet - Kultur jaringan laboratorium (Anggrek)</option>
-                  <option value="anakan">anakan - Tunas anakan (Pisang, Nenas)</option>
-                </select>
+                  placeholder="Pilih Satuan Standar..."
+                />
               </div>
 
               <div>
@@ -1657,13 +1659,12 @@ export default function MasterDataPage() {
             <form onSubmit={handleSaveBpsb} className="space-y-4 text-xs">
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Provinsi Wilayah *</label>
-                <select
+                <CustomDropdown
+                  options={PROVINCES_INDONESIA.map(p => ({ value: p, label: p }))}
                   value={bpsbModal.item.provinsi}
-                  onChange={(e) => setBpsbModal(prev => ({ ...prev, item: { ...prev.item, provinsi: e.target.value } }))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                >
-                  {PROVINCES_INDONESIA.map(p => <option key={p} value={p}>{p}</option>)}
-                </select>
+                  onChange={(val) => setBpsbModal(prev => ({ ...prev, item: { ...prev.item, provinsi: val } }))}
+                  placeholder="Pilih Provinsi..."
+                />
               </div>
 
               <div>
@@ -1735,13 +1736,12 @@ export default function MasterDataPage() {
             <form onSubmit={handleSaveLssm} className="space-y-4 text-xs">
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Provinsi Lokasi *</label>
-                <select
+                <CustomDropdown
+                  options={PROVINCES_INDONESIA.map(p => ({ value: p, label: p }))}
                   value={lssmModal.item.provinsi}
-                  onChange={(e) => setLssmModal(prev => ({ ...prev, item: { ...prev.item, provinsi: e.target.value } }))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs outline-none"
-                >
-                  {PROVINCES_INDONESIA.map(p => <option key={p} value={p}>{p}</option>)}
-                </select>
+                  onChange={(val) => setLssmModal(prev => ({ ...prev, item: { ...prev.item, provinsi: val } }))}
+                  placeholder="Pilih Provinsi..."
+                />
               </div>
 
               <div>

@@ -32,6 +32,7 @@ import {
   Shield
 } from 'lucide-react';
 import { UserRole } from '@/types';
+import { PROVINCES_INDONESIA } from '@/data/masterData';
 import CustomDropdown, { DropdownOption } from '@/components/ui/CustomDropdown';
 
 interface UserRecord {
@@ -873,14 +874,18 @@ export default function PenggunaManagementPage() {
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Wilayah / Provinsi</label>
-                  <input
-                    type="text"
-                    value={formData.province}
-                    onChange={(e) => setFormData({ ...formData, province: e.target.value })}
-                    placeholder="Contoh: Jawa Timur / Pusat"
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 text-slate-900 rounded-xl outline-none"
+                <div>
+                  <CustomDropdown
+                    label="Wilayah / Provinsi"
+                    searchable={true}
+                    searchPlaceholder="Cari provinsi..."
+                    options={[
+                      { value: 'Pusat (Kementerian Pertanian)', label: 'Pusat (Kementerian Pertanian)', badge: 'PUSAT' },
+                      ...PROVINCES_INDONESIA.map(p => ({ value: p, label: p }))
+                    ]}
+                    value={formData.province || 'Pusat (Kementerian Pertanian)'}
+                    onChange={(val) => setFormData({ ...formData, province: val })}
+                    placeholder="Pilih Provinsi..."
                   />
                 </div>
 
