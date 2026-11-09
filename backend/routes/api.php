@@ -127,3 +127,127 @@ Route::prefix('varieties')->group(function () {
         ]);
     });
 });
+
+// =========================================================================
+// DATA VARIETAS TERDAFTAR NASIONAL (PROSEED KEMENTERIAN PERTANIAN RI)
+// =========================================================================
+Route::prefix('registered-varieties')->group(function () {
+    Route::get('/', function (Request $request) {
+        $search = strtolower(trim((string) $request->input('search', '')));
+        $kategori = trim((string) $request->input('kategori', ''));
+        $komoditas = trim((string) $request->input('komoditas', ''));
+        $tahun = trim((string) $request->input('tahun', ''));
+        $page = max(1, (int) $request->input('page', 1));
+        $limit = min(100, max(5, (int) $request->input('limit', 20)));
+
+        $allData = [];
+
+        // Check if DB table exists & populated
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('registered_varieties') && \App\Models\RegisteredVariety::count() > 0) {
+                $query = \App\Models\RegisteredVariety::query();
+
+                if (!empty($search)) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('nama_varietas', 'like', "%{$search}%")
+                          ->orWhere('no_sk', 'like', "%{$search}%")
+                          ->orWhere('produsen', 'like', "%{$search}%")
+                          ->orWhere('komoditas', 'like', "%{$search}%");
+                    });
+                }
+
+                if (!empty($kategori) && $kategori !== 'Semua') {
+                    $query->where('kategori', 'like', "%{$kategori}%");
+                }
+
+                if (!empty($komoditas) && $komoditas !== 'Semua') {
+                    $query->where('komoditas', $komoditas);
+                }
+
+                if (!empty($tahun) && $tahun !== 'Semua') {
+                    $query->where('tahun_daftar', $tahun);
+                }
+
+                $total = $query->count();
+                $items = $query->orderBy('id', 'asc')
+                              ->skip(($page - 1) * $limit)
+                              ->take($limit)
+                              ->get();
+
+                return response()->json([
+                    'status' => 'success',
+                    'source' => 'mysql',
+                    'total' => $total,
+                    'current_page' => $page,
+                    'last_page' => (int) ceil($total / $limit),
+                    'per_page' => $limit,
+                    'summary' => [
+                        'total_all' => 4009,
+                        'sayuran' => 2504,
+                        'buah' => 1105,
+                        'flori' => 360,
+                        'obat' => 40
+                    ],
+                    'data' => $items
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // Fallback to local JSON
+        }
+
+        // Fallback to JSON file
+        $jsonFile = database_path('data/varietas_terdaftar.json');
+        if (file_exists($jsonFile)) {
+            $allData = json_decode(file_get_contents($jsonFile), true) ?: [];
+        }
+
+        // Filter
+        $filtered = array_filter($allData, function ($item) use ($search, $kategori, $komoditas, $tahun) {
+            if (!empty($search)) {
+                $haystack = strtolower(($item['nama_varietas'] ?? '') . ' ' . ($item['no_sk'] ?? '') . ' ' . ($item['produsen'] ?? '') . ' ' . ($item['komoditas'] ?? ''));
+                if (strpos($haystack, $search) === false) {
+                    return false;
+                }
+            }
+            if (!empty($kategori) && $kategori !== 'Semua') {
+                if (stripos($item['kategori'] ?? '', $kategori) === false) {
+                    return false;
+                }
+            }
+            if (!empty($komoditas) && $komoditas !== 'Semua') {
+                if (($item['komoditas'] ?? '') !== $komoditas) {
+                    return false;
+                }
+            }
+            if (!empty($tahun) && $tahun !== 'Semua') {
+                if (($item['tahun_daftar'] ?? '') !== $tahun) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        $filtered = array_values($filtered);
+        $total = count($filtered);
+        $offset = ($page - 1) * $limit;
+        $sliced = array_slice($filtered, $offset, $limit);
+
+        return response()->json([
+            'status' => 'success',
+            'source' => 'json_fallback',
+            'total' => $total,
+            'current_page' => $page,
+            'last_page' => (int) ceil($total / $limit),
+            'per_page' => $limit,
+            'summary' => [
+                'total_all' => 4009,
+                'sayuran' => 2504,
+                'buah' => 1105,
+                'flori' => 360,
+                'obat' => 40
+            ],
+            'data' => $sliced
+        ]);
+    });
+});
+

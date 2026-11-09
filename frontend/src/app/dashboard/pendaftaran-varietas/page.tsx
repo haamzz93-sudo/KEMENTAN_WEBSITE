@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { 
-  FileCheck, 
+  FileCheck,
+  Sprout,
+  ExternalLink, 
   Plus, 
   Search, 
   CalendarClock, 
@@ -378,15 +381,24 @@ export default function VarietyRegistrationPage() {
             </p>
           </div>
         </div>
-        <a
-          href="https://benih.pertanian.go.id"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-white text-emerald-950 font-bold text-xs hover:bg-emerald-50 transition-all shrink-0 shadow-xs"
-        >
-          <span>Kunjungi Proseed Kementan</span>
-          <ArrowRight className="w-3.5 h-3.5 text-emerald-800" />
-        </a>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <Link
+            href="/dashboard/varietas-terdaftar"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all shadow-sm"
+          >
+            <Sprout className="w-4 h-4 text-emerald-950" />
+            <span>Katalog 4.009 Varietas Terdaftar (PROSEED)</span>
+          </Link>
+          <a
+            href="https://benih.pertanian.go.id"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center space-x-1.5 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-xs border border-white/20 transition-all"
+          >
+            <span>Portal Kementan</span>
+            <ExternalLink className="w-3.5 h-3.5 text-emerald-300" />
+          </a>
+        </div>
       </div>
 
       {/* 4 Layanan Tabs Navigation */}

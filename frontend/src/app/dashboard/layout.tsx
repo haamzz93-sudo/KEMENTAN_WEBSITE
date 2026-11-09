@@ -265,6 +265,12 @@ export default function DashboardLayout({
         icon: FileCheck,
       },
       {
+        title: 'Database Varietas Terdaftar (PROSEED)',
+        subtitle: '4.009 Varietas Ber-SK Kementan',
+        href: '/dashboard/varietas-terdaftar',
+        icon: Sprout,
+      },
+      {
         title: 'Kelola Pengguna & Role',
         subtitle: 'Manajemen Akun Terdaftar',
         href: '/dashboard/pengguna',
@@ -450,7 +456,7 @@ export default function DashboardLayout({
     master_data: ['/dashboard/master-data'],
     modul_a: ['/dashboard/produsen-pengedar'],
     modul_b: ['/dashboard/produksi-benih'],
-    modul_c: ['/dashboard/pendaftaran-varietas'],
+    modul_c: ['/dashboard/pendaftaran-varietas', '/dashboard/varietas-terdaftar'],
     pengguna: ['/dashboard/pengguna'],
     cms: ['/dashboard/pengaturan-web'],
     profil: ['/dashboard/profil']
