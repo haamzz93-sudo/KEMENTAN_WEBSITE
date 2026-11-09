@@ -1,6 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import varietasData from '@/data/varietas_terdaftar.json';
+import fs from 'fs';
+import path from 'path';
 
+// Helper to get fresh data from disk
+function getVarietasData(): any[] {
+  try {
+    const filePath = path.join(process.cwd(), 'src', 'data', 'varietas_terdaftar.json');
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(raw);
+    }
+  } catch (err) {
+    console.error('Error reading varietas JSON:', err);
+  }
+  return [];
+}
+
+// Helper to save data to disk
+function saveVarietasData(data: any[]): boolean {
+  try {
+    const filePath = path.join(process.cwd(), 'src', 'data', 'varietas_terdaftar.json');
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Error saving varietas JSON:', err);
+    return false;
+  }
+}
+
+// 1. GET (Read with Search, Filter & Pagination)
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -11,17 +39,19 @@ export async function GET(request: NextRequest) {
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const limit = Math.min(100, Math.max(5, parseInt(searchParams.get('limit') || '20', 10)));
 
-    let filtered = varietasData as any[];
+    let allData = getVarietasData();
+
+    let filtered = allData;
 
     if (search) {
       filtered = filtered.filter((item) => {
-        const text = `${item.nama_varietas} ${item.no_sk} ${item.produsen} ${item.komoditas}`.toLowerCase();
+        const text = `${item.nama_varietas || ''} ${item.no_sk || ''} ${item.produsen || ''} ${item.komoditas || ''} ${item.no_reg || ''}`.toLowerCase();
         return text.includes(search);
       });
     }
 
     if (kategori && kategori !== 'Semua') {
-      filtered = filtered.filter((item) => item.kategori.toLowerCase().includes(kategori.toLowerCase()));
+      filtered = filtered.filter((item) => (item.kategori || '').toLowerCase().includes(kategori.toLowerCase()));
     }
 
     if (komoditas && komoditas !== 'Semua') {
@@ -37,6 +67,19 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
     const sliced = filtered.slice(offset, offset + limit);
 
+    // Calculate dynamic stats
+    let sayuran = 0;
+    let buah = 0;
+    let flori = 0;
+    let obat = 0;
+    allData.forEach((v) => {
+      const kat = (v.kategori || '').toLowerCase();
+      if (kat.includes('sayur')) sayuran++;
+      else if (kat.includes('buah')) buah++;
+      else if (kat.includes('flori')) flori++;
+      else if (kat.includes('obat') || kat.includes('biofarmaka')) obat++;
+    });
+
     return NextResponse.json({
       status: 'success',
       total,
@@ -44,17 +87,155 @@ export async function GET(request: NextRequest) {
       last_page: totalPages,
       per_page: limit,
       summary: {
-        total_all: 4009,
-        sayuran: 2504,
-        buah: 1105,
-        flori: 360,
-        obat: 40,
+        total_all: allData.length,
+        sayuran,
+        buah,
+        flori,
+        obat,
       },
       data: sliced,
     });
   } catch (err: any) {
     return NextResponse.json(
       { status: 'error', message: err.message || 'Internal error' },
+      { status: 500 }
+    );
+  }
+}
+
+// 2. POST (Create new registered variety)
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { nama_varietas, komoditas, kategori, produsen, no_sk, tahun_daftar, no_reg, wil_adaptasi, tahan_opt } = body;
+
+    if (!nama_varietas || !no_sk) {
+      return NextResponse.json(
+        { status: 'error', message: 'Nama varietas dan Nomor SK Menteri Pertanian wajib diisi!' },
+        { status: 400 }
+      );
+    }
+
+    const allData = getVarietasData();
+    const newId = allData.length > 0 ? Math.max(...allData.map(v => Number(v.id) || 0)) + 1 : 1;
+
+    const newItem = {
+      id: newId,
+      nama_varietas: nama_varietas.trim(),
+      komoditas: komoditas ? komoditas.trim() : '-',
+      kategori: kategori || 'Tanaman Sayuran',
+      produsen: produsen ? produsen.trim() : '-',
+      no_sk: no_sk.trim(),
+      tahun_daftar: tahun_daftar ? String(tahun_daftar).trim() : new Date().getFullYear().toString(),
+      no_reg: no_reg ? no_reg.trim() : '-',
+      upload_deskripsi: '',
+      upload_produk: '',
+      wil_adaptasi: wil_adaptasi ? wil_adaptasi.trim() : '',
+      tahan_opt: tahan_opt ? tahan_opt.trim() : '',
+    };
+
+    // Prepend to array so newly created items appear at the very top (page 1)
+    allData.unshift(newItem);
+    saveVarietasData(allData);
+
+    return NextResponse.json({
+      status: 'success',
+      message: 'Data varietas terdaftar berhasil ditambahkan ke database nasional.',
+      data: newItem,
+    }, { status: 201 });
+  } catch (err: any) {
+    return NextResponse.json(
+      { status: 'error', message: err.message || 'Gagal menyimpan data varietas' },
+      { status: 500 }
+    );
+  }
+}
+
+// 3. PUT (Update existing registered variety)
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, nama_varietas, komoditas, kategori, produsen, no_sk, tahun_daftar, no_reg, wil_adaptasi, tahan_opt } = body;
+
+    if (!id || !nama_varietas || !no_sk) {
+      return NextResponse.json(
+        { status: 'error', message: 'ID, Nama varietas, dan Nomor SK wajib diisi!' },
+        { status: 400 }
+      );
+    }
+
+    const allData = getVarietasData();
+    const index = allData.findIndex(v => Number(v.id) === Number(id));
+
+    if (index === -1) {
+      return NextResponse.json(
+        { status: 'error', message: `Data varietas dengan ID ${id} tidak ditemukan!` },
+        { status: 404 }
+      );
+    }
+
+    allData[index] = {
+      ...allData[index],
+      nama_varietas: nama_varietas.trim(),
+      komoditas: komoditas ? komoditas.trim() : allData[index].komoditas,
+      kategori: kategori || allData[index].kategori,
+      produsen: produsen ? produsen.trim() : allData[index].produsen,
+      no_sk: no_sk.trim(),
+      tahun_daftar: tahun_daftar ? String(tahun_daftar).trim() : allData[index].tahun_daftar,
+      no_reg: no_reg ? no_reg.trim() : allData[index].no_reg,
+      wil_adaptasi: wil_adaptasi !== undefined ? wil_adaptasi.trim() : allData[index].wil_adaptasi,
+      tahan_opt: tahan_opt !== undefined ? tahan_opt.trim() : allData[index].tahan_opt,
+    };
+
+    saveVarietasData(allData);
+
+    return NextResponse.json({
+      status: 'success',
+      message: 'Data varietas terdaftar berhasil diperbarui.',
+      data: allData[index],
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { status: 'error', message: err.message || 'Gagal memperbarui data varietas' },
+      { status: 500 }
+    );
+  }
+}
+
+// 4. DELETE (Delete registered variety)
+export async function DELETE(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { status: 'error', message: 'Parameter ID varietas wajib disertakan!' },
+        { status: 400 }
+      );
+    }
+
+    const allData = getVarietasData();
+    const index = allData.findIndex(v => Number(v.id) === Number(id));
+
+    if (index === -1) {
+      return NextResponse.json(
+        { status: 'error', message: `Data varietas dengan ID ${id} tidak ditemukan!` },
+        { status: 404 }
+      );
+    }
+
+    const removed = allData.splice(index, 1)[0];
+    saveVarietasData(allData);
+
+    return NextResponse.json({
+      status: 'success',
+      message: `Varietas "${removed.nama_varietas}" (No. SK: ${removed.no_sk}) berhasil dihapus dari arsip database.`,
+      data: removed,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { status: 'error', message: err.message || 'Gagal menghapus data varietas' },
       { status: 500 }
     );
   }
