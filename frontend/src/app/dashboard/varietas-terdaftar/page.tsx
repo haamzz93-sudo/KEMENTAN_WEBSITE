@@ -20,9 +20,14 @@ import {
   Save,
   AlertTriangle,
   FileCheck,
-  ShieldCheck
+  ShieldCheck,
+  Leaf,
+  Apple,
+  Flower2,
+  Pill,
+  Calendar
 } from 'lucide-react';
-import CustomDropdown from '@/components/ui/CustomDropdown';
+import CustomDropdown, { DropdownOption } from '@/components/ui/CustomDropdown';
 
 interface RegisteredVarietyItem {
   id: number;
@@ -393,18 +398,52 @@ export default function RegisteredVarietiesPage() {
           <div className="md:col-span-3">
             <CustomDropdown
               label=""
-              placeholder="Pilih Kategori"
+              placeholder="Pilih Kategori Komoditas"
               value={selectedKategori}
               onChange={(val) => {
                 setSelectedKategori(val);
                 setPage(1);
               }}
               options={[
-                { label: 'Semua Kategori', value: 'Semua' },
-                { label: 'Tanaman Sayuran', value: 'Tanaman Sayuran' },
-                { label: 'Tanaman Buah', value: 'Tanaman Buah' },
-                { label: 'Tanaman Florikultura', value: 'Tanaman Florikultura' },
-                { label: 'Tanaman Obat / Biofarmaka', value: 'Tanaman Obat' },
+                { 
+                  label: 'Semua Kategori', 
+                  value: 'Semua',
+                  icon: <Layers className="w-3.5 h-3.5 text-slate-500" />,
+                  badge: `${stats.total_all.toLocaleString('id-ID')} Total`,
+                  badgeColor: 'bg-slate-100 text-slate-700 border-slate-200'
+                },
+                { 
+                  label: 'Tanaman Sayuran', 
+                  value: 'Tanaman Sayuran',
+                  icon: <Leaf className="w-3.5 h-3.5 text-emerald-600" />,
+                  badge: `${stats.sayuran.toLocaleString('id-ID')} Varietas`,
+                  badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                  description: 'Cabai, Tomat, Bawang, Jagung'
+                },
+                { 
+                  label: 'Tanaman Buah', 
+                  value: 'Tanaman Buah',
+                  icon: <Apple className="w-3.5 h-3.5 text-amber-600" />,
+                  badge: `${stats.buah.toLocaleString('id-ID')} Varietas`,
+                  badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+                  description: 'Melon, Semangka, Mangga, Durian'
+                },
+                { 
+                  label: 'Tanaman Florikultura', 
+                  value: 'Tanaman Florikultura',
+                  icon: <Flower2 className="w-3.5 h-3.5 text-purple-600" />,
+                  badge: `${stats.flori.toLocaleString('id-ID')} Varietas`,
+                  badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
+                  description: 'Krisan, Anggrek, Mawar'
+                },
+                { 
+                  label: 'Tanaman Obat / Biofarmaka', 
+                  value: 'Tanaman Obat',
+                  icon: <Pill className="w-3.5 h-3.5 text-teal-600" />,
+                  badge: `${stats.obat.toLocaleString('id-ID')} Varietas`,
+                  badgeColor: 'bg-teal-100 text-teal-800 border-teal-200',
+                  description: 'Jahe, Kunyit, Temulawak'
+                },
               ]}
             />
           </div>
@@ -413,21 +452,55 @@ export default function RegisteredVarietiesPage() {
           <div className="md:col-span-2">
             <CustomDropdown
               label=""
-              placeholder="Pilih Tahun"
+              placeholder="Pilih Tahun Pelepasan"
               value={selectedTahun}
               onChange={(val) => {
                 setSelectedTahun(val);
                 setPage(1);
               }}
               options={[
-                { label: 'Semua Tahun', value: 'Semua' },
-                { label: 'Tahun 2026', value: '2026' },
-                { label: 'Tahun 2025', value: '2025' },
-                { label: 'Tahun 2024', value: '2024' },
-                { label: 'Tahun 2023', value: '2023' },
-                { label: 'Tahun 2022', value: '2022' },
-                { label: 'Tahun 2021', value: '2021' },
-                { label: 'Tahun 2020', value: '2020' },
+                { 
+                  label: 'Semua Tahun', 
+                  value: 'Semua',
+                  icon: <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                },
+                { 
+                  label: 'Tahun 2026', 
+                  value: '2026',
+                  icon: <Calendar className="w-3.5 h-3.5 text-emerald-600" />,
+                  badge: 'Terbaru',
+                  badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                },
+                { 
+                  label: 'Tahun 2025', 
+                  value: '2025',
+                  icon: <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                },
+                { 
+                  label: 'Tahun 2024', 
+                  value: '2024',
+                  icon: <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                },
+                { 
+                  label: 'Tahun 2023', 
+                  value: '2023',
+                  icon: <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                },
+                { 
+                  label: 'Tahun 2022', 
+                  value: '2022',
+                  icon: <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                },
+                { 
+                  label: 'Tahun 2021', 
+                  value: '2021',
+                  icon: <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                },
+                { 
+                  label: 'Tahun 2020', 
+                  value: '2020',
+                  icon: <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                },
               ]}
             />
           </div>
@@ -444,9 +517,9 @@ export default function RegisteredVarietiesPage() {
               }}
               options={[
                 { label: '10 Data / Hal', value: '10' },
-                { label: '20 Data / Hal', value: '20' },
+                { label: '20 Data / Hal', value: '20', badge: 'Standar', badgeColor: 'bg-emerald-50 text-emerald-700' },
                 { label: '50 Data / Hal', value: '50' },
-                { label: '100 Data / Hal', value: '100' },
+                { label: '100 Data / Hal', value: '100', badge: 'Maks', badgeColor: 'bg-amber-50 text-amber-700' },
               ]}
             />
           </div>
@@ -705,18 +778,40 @@ export default function RegisteredVarietiesPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                    Kelompok Kategori
+                    Kelompok Kategori <span className="text-rose-500">*</span>
                   </label>
-                  <select
+                  <CustomDropdown
+                    options={[
+                      { 
+                        label: 'Tanaman Sayuran', 
+                        value: 'Tanaman Sayuran', 
+                        icon: <Leaf className="w-3.5 h-3.5 text-emerald-600" />,
+                        description: 'Cabai, Bawang, Tomat, Jagung'
+                      },
+                      { 
+                        label: 'Tanaman Buah', 
+                        value: 'Tanaman Buah', 
+                        icon: <Apple className="w-3.5 h-3.5 text-amber-600" />,
+                        description: 'Melon, Semangka, Mangga, Durian'
+                      },
+                      { 
+                        label: 'Tanaman Florikultura', 
+                        value: 'Tanaman Florikultura', 
+                        icon: <Flower2 className="w-3.5 h-3.5 text-purple-600" />,
+                        description: 'Krisan, Anggrek, Mawar'
+                      },
+                      { 
+                        label: 'Tanaman Obat / Biofarmaka', 
+                        value: 'Tanaman Obat / Biofarmaka', 
+                        icon: <Pill className="w-3.5 h-3.5 text-teal-600" />,
+                        description: 'Jahe, Kunyit, Temulawak'
+                      },
+                    ]}
                     value={formData.kategori}
-                    onChange={(e) => setFormData({ ...formData, kategori: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white"
-                  >
-                    <option value="Tanaman Sayuran">Tanaman Sayuran</option>
-                    <option value="Tanaman Buah">Tanaman Buah</option>
-                    <option value="Tanaman Florikultura">Tanaman Florikultura</option>
-                    <option value="Tanaman Obat / Biofarmaka">Tanaman Obat / Biofarmaka</option>
-                  </select>
+                    onChange={(val) => setFormData({ ...formData, kategori: val })}
+                    placeholder="Pilih Kelompok Kategori..."
+                    size="sm"
+                  />
                 </div>
 
                 <div>
