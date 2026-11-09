@@ -286,7 +286,7 @@ export default function RegisteredVarietiesPage() {
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs tracking-wide shadow-sm transition-all hover:scale-[1.02] active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              + Tambah Varietas Ber-SK
+              Tambah Varietas Ber-SK
             </button>
             <button
               onClick={handleExportCSV}
