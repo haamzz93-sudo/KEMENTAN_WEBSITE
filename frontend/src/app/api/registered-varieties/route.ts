@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const komoditas = searchParams.get('komoditas') || 'Semua';
     const tahun = searchParams.get('tahun') || 'Semua';
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-    const limit = Math.min(100, Math.max(5, parseInt(searchParams.get('limit') || '20', 10)));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)));
 
     let allData = getVarietasData();
 
@@ -45,17 +45,25 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       filtered = filtered.filter((item) => {
-        const text = `${item.nama_varietas || ''} ${item.no_sk || ''} ${item.produsen || ''} ${item.komoditas || ''} ${item.no_reg || ''}`.toLowerCase();
+        const text = `${item.nama_varietas || ''} ${item.no_sk || ''} ${item.produsen || ''} ${item.komoditas || ''} ${item.no_reg || ''} ${item.sk_pendaftaran || ''} ${item.upload_deskripsi || ''} ${item.sk_deskripsi || ''}`.toLowerCase();
         return text.includes(search);
       });
     }
 
     if (kategori && kategori !== 'Semua') {
-      filtered = filtered.filter((item) => (item.kategori || '').toLowerCase().includes(kategori.toLowerCase()));
+      const katLower = kategori.toLowerCase();
+      filtered = filtered.filter((item) => {
+        const itemKat = (item.kategori || '').toLowerCase();
+        if (katLower === 'tanaman sayuran' || katLower === 'sayuran') return itemKat.includes('sayur');
+        if (katLower === 'tanaman buah' || katLower === 'buah') return itemKat.includes('buah');
+        if (katLower === 'tanaman florikultura' || katLower === 'flori' || katLower === 'hias') return itemKat.includes('flori') || itemKat.includes('hias');
+        if (katLower === 'tanaman obat' || katLower === 'obat' || katLower === 'biofarmaka') return itemKat.includes('obat') || itemKat.includes('biofarmaka');
+        return itemKat.includes(katLower);
+      });
     }
 
     if (komoditas && komoditas !== 'Semua') {
-      filtered = filtered.filter((item) => item.komoditas === komoditas);
+      filtered = filtered.filter((item) => (item.komoditas || '').toLowerCase().includes(komoditas.toLowerCase()));
     }
 
     if (tahun && tahun !== 'Semua') {
@@ -76,7 +84,7 @@ export async function GET(request: NextRequest) {
       const kat = (v.kategori || '').toLowerCase();
       if (kat.includes('sayur')) sayuran++;
       else if (kat.includes('buah')) buah++;
-      else if (kat.includes('flori')) flori++;
+      else if (kat.includes('flori') || kat.includes('hias')) flori++;
       else if (kat.includes('obat') || kat.includes('biofarmaka')) obat++;
     });
 
@@ -107,7 +115,20 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { nama_varietas, komoditas, kategori, produsen, no_sk, tahun_daftar, no_reg, wil_adaptasi, tahan_opt } = body;
+    const { 
+      nama_varietas, 
+      komoditas, 
+      kategori, 
+      produsen, 
+      no_sk, 
+      tahun_daftar, 
+      no_reg, 
+      sk_pendaftaran,
+      upload_deskripsi,
+      sk_deskripsi,
+      wil_adaptasi, 
+      tahan_opt 
+    } = body;
 
     if (!nama_varietas || !no_sk) {
       return NextResponse.json(
@@ -119,6 +140,9 @@ export async function POST(request: NextRequest) {
     const allData = getVarietasData();
     const newId = allData.length > 0 ? Math.max(...allData.map(v => Number(v.id) || 0)) + 1 : 1;
 
+    const finalNoReg = (sk_pendaftaran || no_reg || '').trim();
+    const finalDeskripsi = (sk_deskripsi || upload_deskripsi || '').trim();
+
     const newItem = {
       id: newId,
       nama_varietas: nama_varietas.trim(),
@@ -127,8 +151,8 @@ export async function POST(request: NextRequest) {
       produsen: produsen ? produsen.trim() : '-',
       no_sk: no_sk.trim(),
       tahun_daftar: tahun_daftar ? String(tahun_daftar).trim() : new Date().getFullYear().toString(),
-      no_reg: no_reg ? no_reg.trim() : '-',
-      upload_deskripsi: '',
+      no_reg: finalNoReg || '-',
+      upload_deskripsi: finalDeskripsi || '',
       upload_produk: '',
       wil_adaptasi: wil_adaptasi ? wil_adaptasi.trim() : '',
       tahan_opt: tahan_opt ? tahan_opt.trim() : '',
@@ -140,7 +164,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       status: 'success',
-      message: 'Data varietas terdaftar berhasil ditambahkan ke database nasional.',
+      message: 'Data varietas terdaftar berhasil ditambahkan ke database nasional PROSEED.',
       data: newItem,
     }, { status: 201 });
   } catch (err: any) {
@@ -155,11 +179,25 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, nama_varietas, komoditas, kategori, produsen, no_sk, tahun_daftar, no_reg, wil_adaptasi, tahan_opt } = body;
+    const { 
+      id, 
+      nama_varietas, 
+      komoditas, 
+      kategori, 
+      produsen, 
+      no_sk, 
+      tahun_daftar, 
+      no_reg, 
+      sk_pendaftaran,
+      upload_deskripsi,
+      sk_deskripsi,
+      wil_adaptasi, 
+      tahan_opt 
+    } = body;
 
     if (!id || !nama_varietas || !no_sk) {
       return NextResponse.json(
-        { status: 'error', message: 'ID, Nama varietas, dan Nomor SK wajib diisi!' },
+        { status: 'error', message: 'ID, Nama varietas, dan Nomor SK Pelepasan wajib diisi!' },
         { status: 400 }
       );
     }
@@ -174,6 +212,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const finalNoReg = sk_pendaftaran !== undefined ? sk_pendaftaran.trim() : (no_reg !== undefined ? no_reg.trim() : allData[index].no_reg);
+    const finalDeskripsi = sk_deskripsi !== undefined ? sk_deskripsi.trim() : (upload_deskripsi !== undefined ? upload_deskripsi.trim() : allData[index].upload_deskripsi);
+
     allData[index] = {
       ...allData[index],
       nama_varietas: nama_varietas.trim(),
@@ -182,7 +223,8 @@ export async function PUT(request: NextRequest) {
       produsen: produsen ? produsen.trim() : allData[index].produsen,
       no_sk: no_sk.trim(),
       tahun_daftar: tahun_daftar ? String(tahun_daftar).trim() : allData[index].tahun_daftar,
-      no_reg: no_reg ? no_reg.trim() : allData[index].no_reg,
+      no_reg: finalNoReg || '-',
+      upload_deskripsi: finalDeskripsi || '',
       wil_adaptasi: wil_adaptasi !== undefined ? wil_adaptasi.trim() : allData[index].wil_adaptasi,
       tahan_opt: tahan_opt !== undefined ? tahan_opt.trim() : allData[index].tahan_opt,
     };

@@ -35,11 +35,26 @@ import { INITIAL_VARIETY_APPLICATIONS } from '@/data/masterData';
 import { VarietyApplication } from '@/types';
 import ScrollReveal from '@/components/ScrollReveal';
 
+// Helper to decode base64 filename from PROSEED
+function cleanDeskTitle(val?: string): string {
+  if (!val || val === '-' || !val.trim()) return '';
+  const metaMatch = val.match(/meta([A-Za-z0-9+/=]+)-/);
+  if (metaMatch) {
+    try {
+      if (typeof window !== 'undefined' && window.atob) {
+        return window.atob(metaMatch[1]).replace(/\.pdf$/i, '').trim();
+      }
+    } catch {}
+  }
+  const parts = val.split('/');
+  return parts[parts.length - 1].replace(/\.pdf$/i, '').trim();
+}
+
 // Helper to map DB row to Frontend Variety Application
 function mapDbToVariety(row: any): VarietyApplication {
   return {
     id: row.id,
-    trackingCode: row.tracking_code || `VAR-${row.id}`,
+    trackingCode: row.tracking_code || 'VAR-' + row.id,
     applicantName: row.applicant_name || '-',
     institutionType: row.institution_type || 'swasta',
     cropType: row.crop_type || 'sayuran',
@@ -61,6 +76,8 @@ function mapDbToVariety(row: any): VarietyApplication {
     totalObjectionsCount: row.total_objections_count !== null ? Number(row.total_objections_count) : 0,
     recommendationLetterNo: row.recommendation_letter_no || undefined,
     registrationNumber: row.registration_number || undefined,
+    no_reg: row.no_reg || undefined,
+    upload_deskripsi: row.upload_deskripsi || undefined,
     statusText: row.status_text || 'Dalam Proses',
   };
 }
@@ -69,6 +86,9 @@ export default function HomePage() {
   const [searchCode, setSearchCode] = useState('');
   const [allApplications, setAllApplications] = useState<VarietyApplication[]>(INITIAL_VARIETY_APPLICATIONS);
   const [catalogVarieties, setCatalogVarieties] = useState<VarietyApplication[]>([]);
+  const [catalogSearch, setCatalogSearch] = useState('');
+  const [catalogDisplayLimit, setCatalogDisplayLimit] = useState(6);
+  const [catalogTotalCount, setCatalogTotalCount] = useState(4010);
   const [objectionVarieties, setObjectionVarieties] = useState<VarietyApplication[]>([]);
   const [trackedApplication, setTrackedApplication] = useState<VarietyApplication | null>(null);
   const [searchError, setSearchError] = useState(false);
@@ -1037,101 +1057,215 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-8">
             
             <ScrollReveal direction="up" delay={0}>
-              <div className="max-w-3xl mb-8">
-                <span className="text-xs font-black text-emerald-800 uppercase tracking-widest block mb-1">
-                  DATABASE VARIETAS UNGGUL
-                </span>
+              <div className="max-w-4xl mb-8">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span className="text-xs font-black text-emerald-800 uppercase tracking-widest">
+                    DATABASE VARIETAS UNGGUL
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
+                    {catalogTotalCount.toLocaleString('id-ID')}+ Varietas Ber-SK Resmi
+                  </span>
+                </div>
                 <h2 className="font-heading font-black text-2xl sm:text-3xl text-slate-900 tracking-tight">
                   Katalog Varietas Terdaftar di Kementerian Pertanian
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 mt-1">
-                  Data varietas tanaman hortikultura yang telah lulus sidang TP2VH, melewati masa sanggah publik, dan resmi memiliki Tanda Daftar PPVTPP.
+                  Data varietas tanaman hortikultura yang telah lulus sidang TP2VH, melewati masa sanggah publik, dan resmi memiliki SK Menteri Pertanian terintegrasi penuh dari basis data operasional PROSEED Kementan RI.
                 </p>
 
-                {/* Filter Tabs Rounded */}
-                <div className="flex items-center gap-1.5 sm:gap-2 mt-6 overflow-x-auto pb-2 scrollbar-none">
-                  {(['semua', 'sayuran', 'buah', 'hias', 'obat'] as const).map(tab => (
-                    <button
-                      key={tab}
-                      type="button"
-                      onClick={() => setActiveTabCatalogue(tab)}
-                      className={`relative group overflow-hidden whitespace-nowrap px-3.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold uppercase rounded-xl transition-all shrink-0 ${
-                        activeTabCatalogue === tab
-                          ? 'bg-gradient-to-r from-emerald-800 to-teal-800 text-white shadow-md border border-emerald-500/40'
-                          : 'bg-white hover:bg-emerald-50 text-slate-700 border border-slate-200 hover:border-emerald-300 shadow-2xs'
-                      }`}
-                    >
-                      <span className="relative z-10">{tab === 'semua' ? 'Semua Komoditas' : `Tanaman ${tab}`}</span>
-                    </button>
-                  ))}
+                {/* Filter Tabs Rounded & Search Bar */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6">
+                  {/* Filter Tabs */}
+                  <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-none">
+                    {[
+                      { id: 'semua', label: 'Semua Komoditas', badge: `${catalogTotalCount.toLocaleString('id-ID')}` },
+                      { id: 'sayuran', label: 'Tanaman Sayuran', badge: '2.505' },
+                      { id: 'buah', label: 'Tanaman Buah', badge: '1.105' },
+                      { id: 'hias', label: 'Florikultura', badge: '360' },
+                      { id: 'obat', label: 'Biofarmaka / Obat', badge: '40' },
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => {
+                          setActiveTabCatalogue(tab.id as any);
+                          setCatalogDisplayLimit(6);
+                        }}
+                        className={`relative group overflow-hidden whitespace-nowrap px-3.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold uppercase rounded-xl transition-all shrink-0 flex items-center gap-1.5 ${
+                          activeTabCatalogue === tab.id
+                            ? 'bg-gradient-to-r from-emerald-800 to-teal-800 text-white shadow-md border border-emerald-500/40'
+                            : 'bg-white hover:bg-emerald-50 text-slate-700 border border-slate-200 hover:border-emerald-300 shadow-2xs'
+                        }`}
+                      >
+                        <span className="relative z-10">{tab.label}</span>
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                          activeTabCatalogue === tab.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}>{tab.badge}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Search Bar */}
+                  <div className="relative min-w-[240px] sm:max-w-xs w-full">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Cari varietas, komoditas, SK..."
+                      value={catalogSearch}
+                      onChange={(e) => {
+                        setCatalogSearch(e.target.value);
+                        setCatalogDisplayLimit(6);
+                      }}
+                      className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 bg-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 shadow-2xs"
+                    />
+                    {catalogSearch && (
+                      <button
+                        onClick={() => setCatalogSearch('')}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs p-0.5"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
 
             {/* Kartu Katalog: LIQUID GLASS CARDS WITH HOVER ANIMATION */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-              {(catalogVarieties.length > 0
+            {(() => {
+              const sourceList = catalogVarieties.length > 0
                 ? catalogVarieties
-                : allApplications.filter(item => item.currentStage === 'layanan_4_selesai_terdaftar' || (item.registrationNumber && item.registrationNumber.trim() !== ''))
-              )
-                .filter(item => activeTabCatalogue === 'semua' || item.cropType === activeTabCatalogue)
-                .map((item, idx) => (
-                  <ScrollReveal key={item.id} direction="up" delay={(idx % 6) * 100} className="h-full">
-                    <div className="relative group overflow-hidden border border-white hover:border-emerald-500/60 bg-white/90 hover:bg-white backdrop-blur-2xl p-5 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col justify-between shadow-[0_10px_30px_rgba(6,78,59,0.06),inset_0_1px_2px_rgba(255,255,255,1)] hover:-translate-y-2 transition-all duration-300 h-full">
-                      {/* Top Specular Glare */}
-                      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/80 to-transparent pointer-events-none rounded-t-2xl sm:rounded-t-3xl" />
-                      {/* Hover light sheen sweep */}
-                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-emerald-100/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                : allApplications.filter(item => item.currentStage === 'layanan_4_selesai_terdaftar' || (item.registrationNumber && item.registrationNumber.trim() !== ''));
 
-                      <div className="relative z-10">
-                        <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-                          <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200">
-                            {item.cropType}
-                          </span>
-                          <span className="text-[11px] font-mono text-slate-400">
-                            {item.submissionDate}
-                          </span>
-                        </div>
+              const filtered = sourceList.filter(item => {
+                const matchTab = activeTabCatalogue === 'semua' || item.cropType === activeTabCatalogue;
+                if (!matchTab) return false;
+                if (!catalogSearch) return true;
+                const q = catalogSearch.toLowerCase();
+                const text = `${item.proposedVarietyName} ${item.commodityName} ${item.applicantName} ${item.registrationNumber || ''} ${item.no_reg || ''}`.toLowerCase();
+                return text.includes(q);
+              });
 
-                        <h4 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-emerald-950 transition-colors">
-                          {item.proposedVarietyName}
-                        </h4>
-                        <p className="text-xs text-slate-500 mt-0.5">Komoditas: <strong className="text-slate-800">{item.commodityName}</strong></p>
-                        
-                        <div className="my-3 p-3 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] text-slate-600 space-y-1 shadow-inner">
-                          <div>Pemohon: <strong className="text-slate-800">{item.applicantName}</strong></div>
-                          <div>Silsilah: <span>{item.lineage}</span></div>
-                          {item.registrationNumber && (
-                            <div className="text-emerald-900 font-mono font-bold mt-1.5 pt-1 border-t border-slate-200">
-                              No. SK: {item.registrationNumber}
+              if (filtered.length === 0) {
+                return (
+                  <div className="col-span-full py-12 text-center bg-white/60 backdrop-blur-md rounded-2xl border border-dashed border-slate-300 p-8">
+                    <p className="text-sm font-semibold text-slate-700">Tidak ada varietas terdaftar yang sesuai dengan pencarian Anda.</p>
+                    <p className="text-xs text-slate-400 mt-1">Coba gunakan kata kunci lain atau pilih Semua Komoditas.</p>
+                  </div>
+                );
+              }
+
+              const displayed = filtered.slice(0, catalogDisplayLimit);
+
+              return (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                    {displayed.map((item, idx) => {
+                      const deskTitle = cleanDeskTitle(item.upload_deskripsi);
+                      return (
+                        <ScrollReveal key={item.id} direction="up" delay={(idx % 6) * 80} className="h-full">
+                          <div className="relative group overflow-hidden border border-white hover:border-emerald-500/60 bg-white/90 hover:bg-white backdrop-blur-2xl p-5 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col justify-between shadow-[0_10px_30px_rgba(6,78,59,0.06),inset_0_1px_2px_rgba(255,255,255,1)] hover:-translate-y-2 transition-all duration-300 h-full">
+                            {/* Top Specular Glare */}
+                            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/80 to-transparent pointer-events-none rounded-t-2xl sm:rounded-t-3xl" />
+                            {/* Hover light sheen sweep */}
+                            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-emerald-100/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+
+                            <div className="relative z-10">
+                              <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                                <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-lg border ${
+                                  item.cropType === 'sayuran' 
+                                    ? 'text-blue-800 bg-blue-50 border-blue-200' 
+                                    : item.cropType === 'buah'
+                                    ? 'text-amber-800 bg-amber-50 border-amber-200'
+                                    : item.cropType === 'hias'
+                                    ? 'text-purple-800 bg-purple-50 border-purple-200'
+                                    : 'text-emerald-800 bg-emerald-50 border-emerald-200'
+                                }`}>
+                                  Tanaman {item.cropType}
+                                </span>
+                                <span className="text-[11px] font-mono font-semibold text-slate-500">
+                                  Tahun {item.submissionDate || '2026'}
+                                </span>
+                              </div>
+
+                              <h4 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-emerald-950 transition-colors">
+                                {item.proposedVarietyName}
+                              </h4>
+                              <p className="text-xs text-slate-500 mt-0.5">Komoditas: <strong className="text-slate-800">{item.commodityName}</strong></p>
+                              
+                              <div className="my-3 p-3 bg-slate-50/80 border border-slate-100 rounded-2xl text-[11px] text-slate-600 space-y-1.5 shadow-inner">
+                                <div className="truncate" title={item.applicantName}>Pemohon: <strong className="text-slate-800">{item.applicantName}</strong></div>
+                                {item.registrationNumber && (
+                                  <div className="text-slate-800 font-mono text-[10px] truncate" title={item.registrationNumber}>
+                                    <span className="text-slate-500">SK Mentan:</span> <strong className="text-slate-900">{item.registrationNumber}</strong>
+                                  </div>
+                                )}
+                                {item.no_reg && item.no_reg !== '-' && (
+                                  <div className="text-emerald-900 font-mono text-[10px] truncate" title={item.no_reg}>
+                                    <span className="text-emerald-700">SK Tanda Daftar:</span> <strong>{item.no_reg}</strong>
+                                  </div>
+                                )}
+                                {deskTitle && deskTitle !== '-' && (
+                                  <div className="text-blue-900 text-[10px] truncate" title={deskTitle}>
+                                    <span className="text-blue-700">SK Deskripsi:</span> <strong>{deskTitle}</strong>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      </div>
 
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between relative z-10">
+                            <div className="pt-3 border-t border-slate-100 flex items-center justify-between relative z-10">
+                              <button
+                                type="button"
+                                onClick={() => setSelectedVerifyVariety(item)}
+                                className="text-[11px] text-emerald-800 hover:text-emerald-950 font-semibold flex items-center space-x-1.5 group/v cursor-pointer transition-colors"
+                              >
+                                <QrCode className="w-3.5 h-3.5 text-emerald-700 group-hover/v:scale-110 transition-transform" />
+                                <span>Verifikasi Digital</span>
+                              </button>
+                              <button 
+                                type="button"
+                                onClick={() => setSelectedManuscriptVariety(item)}
+                                className="relative group/btn overflow-hidden px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs flex items-center space-x-1.5 shadow-[0_2px_8px_rgba(16,185,129,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] hover:scale-105 active:scale-95 transition-all"
+                              >
+                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                <span>Lihat Naskah</span>
+                                <ArrowRight className="w-3 h-3 text-emerald-700 group-hover/btn:translate-x-0.5 transition-transform" />
+                              </button>
+                            </div>
+                          </div>
+                        </ScrollReveal>
+                      );
+                    })}
+                  </div>
+
+                  {/* Footer Action: Muat Lebih / Buka Dashboard */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200/60">
+                    <span className="text-xs text-slate-500">
+                      Menampilkan <strong className="text-slate-800">{Math.min(catalogDisplayLimit, filtered.length)}</strong> dari <strong className="text-slate-800">{filtered.length}</strong> varietas terfilter (Total database: <strong className="text-emerald-700">{catalogTotalCount.toLocaleString('id-ID')}</strong> varietas)
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                      {filtered.length > catalogDisplayLimit && (
                         <button
                           type="button"
-                          onClick={() => setSelectedVerifyVariety(item)}
-                          className="text-[11px] text-emerald-800 hover:text-emerald-950 font-semibold flex items-center space-x-1.5 group/v cursor-pointer transition-colors"
+                          onClick={() => setCatalogDisplayLimit((prev) => prev + 6)}
+                          className="px-4 py-2 text-xs font-bold rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all shadow-2xs"
                         >
-                          <QrCode className="w-3.5 h-3.5 text-emerald-700 group-hover/v:scale-110 transition-transform" />
-                          <span>Verifikasi Digital</span>
+                          Tampilkan Lebih Banyak
                         </button>
-                        <button 
-                          type="button"
-                          onClick={() => setSelectedManuscriptVariety(item)}
-                          className="relative group/btn overflow-hidden px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs flex items-center space-x-1.5 shadow-[0_2px_8px_rgba(16,185,129,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] hover:scale-105 active:scale-95 transition-all"
-                        >
-                          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
-                          <span>Lihat Naskah</span>
-                          <ArrowRight className="w-3 h-3 text-emerald-700 group-hover/btn:translate-x-0.5 transition-transform" />
-                        </button>
-                      </div>
+                      )}
+                      <Link
+                        href="/dashboard/varietas-terdaftar"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white transition-all shadow-md hover:scale-[1.02] active:scale-95"
+                      >
+                        <span>Database Lengkap di Dashboard</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
                     </div>
-                  </ScrollReveal>
-                ))}
-            </div>
+                  </div>
+                </div>
+              );
+            })()}
 
           </div>
         </section>

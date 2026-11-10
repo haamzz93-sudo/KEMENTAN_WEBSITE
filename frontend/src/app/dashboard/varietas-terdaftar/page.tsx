@@ -22,6 +22,7 @@ import {
   Save,
   AlertTriangle,
   FileCheck,
+  FileText,
   ShieldCheck,
   Leaf,
   Apple,
@@ -40,10 +41,27 @@ interface RegisteredVarietyItem {
   no_sk: string;
   tahun_daftar: string;
   no_reg?: string;
+  sk_pendaftaran?: string;
   upload_deskripsi?: string;
+  sk_deskripsi?: string;
   upload_produk?: string;
   wil_adaptasi?: string;
   tahan_opt?: string;
+}
+
+// Helper to decode base64 filename from PROSEED uploads or clean string
+function cleanDeskripsiTitle(val?: string): string {
+  if (!val || val === '-' || !val.trim()) return '-';
+  const metaMatch = val.match(/meta([A-Za-z0-9+/=]+)-/);
+  if (metaMatch) {
+    try {
+      if (typeof window !== 'undefined' && window.atob) {
+        return window.atob(metaMatch[1]).replace(/\.pdf$/i, '').trim();
+      }
+    } catch {}
+  }
+  const parts = val.split('/');
+  return parts[parts.length - 1].replace(/\.pdf$/i, '').trim();
 }
 
 export default function RegisteredVarietiesPage() {
@@ -59,8 +77,8 @@ export default function RegisteredVarietiesPage() {
   
   // Stats
   const [stats, setStats] = useState({
-    total_all: 4009,
-    sayuran: 2504,
+    total_all: 4010,
+    sayuran: 2505,
     buah: 1105,
     flori: 360,
     obat: 40
@@ -79,6 +97,7 @@ export default function RegisteredVarietiesPage() {
     no_sk: '',
     tahun_daftar: new Date().getFullYear().toString(),
     no_reg: '',
+    upload_deskripsi: '',
     wil_adaptasi: '',
     tahan_opt: ''
   });
@@ -138,6 +157,7 @@ export default function RegisteredVarietiesPage() {
       no_sk: '',
       tahun_daftar: new Date().getFullYear().toString(),
       no_reg: '',
+      upload_deskripsi: '',
       wil_adaptasi: '',
       tahan_opt: ''
     });
@@ -156,7 +176,8 @@ export default function RegisteredVarietiesPage() {
       produsen: item.produsen,
       no_sk: item.no_sk,
       tahun_daftar: item.tahun_daftar,
-      no_reg: item.no_reg && item.no_reg !== '-' ? item.no_reg : '',
+      no_reg: item.no_reg && item.no_reg !== '-' ? item.no_reg : (item.sk_pendaftaran || ''),
+      upload_deskripsi: item.upload_deskripsi && item.upload_deskripsi !== '-' ? item.upload_deskripsi : (item.sk_deskripsi || ''),
       wil_adaptasi: item.wil_adaptasi || '',
       tahan_opt: item.tahan_opt || ''
     });
@@ -231,7 +252,7 @@ export default function RegisteredVarietiesPage() {
   // Export to CSV
   const handleExportCSV = () => {
     if (!varieties.length) return;
-    const headers = ['No', 'Nama Varietas', 'Komoditas', 'Kategori', 'Produsen / Pemohon', 'Nomor SK', 'Tahun Terdaftar'];
+    const headers = ['No', 'Nama Varietas', 'Komoditas', 'Kategori', 'Pemohon / Produsen', 'Nomor SK Pelepasan', 'Nomor SK Pendaftaran', 'SK Deskripsi', 'Tahun Terdaftar', 'Status'];
     const rows = varieties.map((v, i) => [
       (page - 1) * limit + i + 1,
       `"${(v.nama_varietas || '').replace(/"/g, '""')}"`,
@@ -239,7 +260,10 @@ export default function RegisteredVarietiesPage() {
       `"${(v.kategori || '').replace(/"/g, '""')}"`,
       `"${(v.produsen || '').replace(/"/g, '""')}"`,
       `"${(v.no_sk || '').replace(/"/g, '""')}"`,
-      `"${v.tahun_daftar || ''}"`
+      `"${(v.no_reg || v.sk_pendaftaran || '-').replace(/"/g, '""')}"`,
+      `"${cleanDeskripsiTitle(v.upload_deskripsi || v.sk_deskripsi).replace(/"/g, '""')}"`,
+      `"${v.tahun_daftar || ''}"`,
+      `"Terdaftar"`
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
@@ -552,27 +576,29 @@ export default function RegisteredVarietiesPage() {
         </div>
       </div>
 
-      {/* Tabel Data Varietas */}
+      {/* Tabel Data Varietas Lengkap dengan SK Pelepasan, SK Pendaftaran, dan SK Deskripsi */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
-                <th className="py-3.5 px-4 w-12 text-center">No</th>
-                <th className="py-3.5 px-4 min-w-[170px]">Nama Varietas</th>
-                <th className="py-3.5 px-4 min-w-[130px]">Komoditas</th>
-                <th className="py-3.5 px-4 min-w-[140px]">Kategori</th>
-                <th className="py-3.5 px-4 min-w-[200px]">Pemohon / Produsen</th>
-                <th className="py-3.5 px-4 min-w-[190px]">Nomor SK Pelepasan</th>
-                <th className="py-3.5 px-4 text-center w-20">Tahun</th>
-                <th className="py-3.5 px-4 text-center w-24">Status</th>
-                <th className="py-3.5 px-4 text-center w-36">Aksi (CRUD)</th>
+                <th className="py-3.5 px-3 w-10 text-center">No</th>
+                <th className="py-3.5 px-4 min-w-[150px]">Nama Varietas</th>
+                <th className="py-3.5 px-3 min-w-[120px]">Komoditas</th>
+                <th className="py-3.5 px-3 min-w-[130px]">Kategori</th>
+                <th className="py-3.5 px-3 min-w-[170px]">Pemohon / Produsen</th>
+                <th className="py-3.5 px-3 min-w-[160px]">Nomor SK Pelepasan</th>
+                <th className="py-3.5 px-3 min-w-[140px]">SK Pendaftaran</th>
+                <th className="py-3.5 px-3 min-w-[160px]">SK Deskripsi</th>
+                <th className="py-3.5 px-2 text-center w-16">Tahun</th>
+                <th className="py-3.5 px-3 text-center w-24">Status</th>
+                <th className="py-3.5 px-3 text-center w-32">Aksi (CRUD)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-slate-500">
+                  <td colSpan={11} className="py-12 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <RefreshCw className="w-6 h-6 animate-spin text-emerald-600" />
                       <span>Memuat data varietas resmi Kementan...</span>
@@ -581,7 +607,7 @@ export default function RegisteredVarietiesPage() {
                 </tr>
               ) : varieties.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-slate-500">
+                  <td colSpan={11} className="py-12 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Info className="w-8 h-8 text-slate-300" />
                       <span className="font-semibold text-slate-700">Tidak ada varietas yang sesuai pencarian.</span>
@@ -592,23 +618,23 @@ export default function RegisteredVarietiesPage() {
               ) : (
                 varieties.map((item, index) => {
                   const no = (page - 1) * limit + index + 1;
+                  const regNo = (item.no_reg && item.no_reg !== '-') ? item.no_reg : (item.sk_pendaftaran && item.sk_pendaftaran !== '-' ? item.sk_pendaftaran : '');
+                  const deskTitle = cleanDeskripsiTitle(item.upload_deskripsi || item.sk_deskripsi);
+
                   return (
                     <tr 
                       key={item.id} 
                       className="hover:bg-emerald-50/40 transition-colors cursor-pointer group"
                       onClick={() => setSelectedDetail(item)}
                     >
-                      <td className="py-3.5 px-4 text-center font-medium text-slate-400">{no}</td>
+                      <td className="py-3.5 px-3 text-center font-medium text-slate-400">{no}</td>
                       <td className="py-3.5 px-4">
                         <div className="font-bold text-slate-900 group-hover:text-emerald-800 flex items-center gap-1.5">
                           {item.nama_varietas}
                         </div>
-                        {item.no_reg && item.no_reg !== '-' && (
-                          <span className="text-[10px] text-slate-400 font-mono">Reg: {item.no_reg}</span>
-                        )}
                       </td>
-                      <td className="py-3.5 px-4 font-medium text-slate-700">{item.komoditas}</td>
-                      <td className="py-3.5 px-4">
+                      <td className="py-3.5 px-3 font-medium text-slate-700">{item.komoditas}</td>
+                      <td className="py-3.5 px-3">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                           item.kategori.includes('Sayuran')
                             ? 'bg-blue-50 text-blue-700 border border-blue-200'
@@ -621,26 +647,48 @@ export default function RegisteredVarietiesPage() {
                           {item.kategori}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600">
-                        <div className="truncate max-w-[200px]" title={item.produsen}>
+                      <td className="py-3.5 px-3 text-slate-600">
+                        <div className="truncate max-w-[170px]" title={item.produsen}>
                           {item.produsen}
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-700">
-                        <div className="truncate max-w-[190px]" title={item.no_sk}>
+                      <td className="py-3.5 px-3 font-mono text-[11px] text-slate-700">
+                        <div className="truncate max-w-[160px]" title={item.no_sk}>
                           {item.no_sk}
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-center font-semibold text-slate-800">
+                      {/* SK Pendaftaran (Nomor Registrasi / Tanda Daftar) */}
+                      <td className="py-3.5 px-3 font-mono text-[11px]">
+                        {regNo ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold truncate max-w-[140px]" title={regNo}>
+                            <FileCheck className="w-3 h-3 text-emerald-600 shrink-0" />
+                            <span className="truncate">{regNo}</span>
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 font-mono text-[11px]">-</span>
+                        )}
+                      </td>
+                      {/* SK Deskripsi (Dokumen / Naskah Deskripsi) */}
+                      <td className="py-3.5 px-3 text-[11px]">
+                        {deskTitle !== '-' ? (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-medium truncate max-w-[160px]" title={deskTitle}>
+                            <FileText className="w-3 h-3 text-blue-600 shrink-0" />
+                            <span className="truncate">{deskTitle}</span>
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">-</span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-2 text-center font-semibold text-slate-800">
                         {item.tahun_daftar}
                       </td>
-                      <td className="py-3.5 px-4 text-center">
+                      <td className="py-3.5 px-3 text-center">
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                           Terdaftar
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-center" onClick={(e) => e.stopPropagation()}>
+                      <td className="py-3.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1.5">
                           <button
                             onClick={() => setSelectedDetail(item)}
@@ -721,7 +769,7 @@ export default function RegisteredVarietiesPage() {
         </div>
       </div>
 
-      {/* MODAL 1: FORM CREATE / EDIT VARIETAS (CRUD REAL) */}
+      {/* MODAL 1: FORM CREATE / EDIT VARIETAS (LENGKAP DENGAN SK PELEPASAN, SK PENDAFTARAN & SK DESKRIPSI) */}
       {isFormModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl">
@@ -759,7 +807,7 @@ export default function RegisteredVarietiesPage() {
                     placeholder="Contoh: K1SM3 / Bejo / Petir"
                     value={formData.nama_varietas}
                     onChange={(e) => setFormData({ ...formData, nama_varietas: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 font-bold"
                   />
                 </div>
 
@@ -788,13 +836,13 @@ export default function RegisteredVarietiesPage() {
                         label: 'Tanaman Sayuran', 
                         value: 'Tanaman Sayuran', 
                         icon: <Leaf className="w-3.5 h-3.5 text-emerald-600" />,
-                        description: 'Cabai, Bawang, Tomat, Jagung'
+                        description: 'Cabai, Tomat, Bawang, Jagung'
                       },
                       { 
                         label: 'Tanaman Buah', 
                         value: 'Tanaman Buah', 
                         icon: <Apple className="w-3.5 h-3.5 text-amber-600" />,
-                        description: 'Melon, Semangka, Mangga, Durian'
+                        description: 'Melon, Semangka, Mangga'
                       },
                       { 
                         label: 'Tanaman Florikultura', 
@@ -830,9 +878,10 @@ export default function RegisteredVarietiesPage() {
                 </div>
               </div>
 
+              {/* NOMOR SK PELEPASAN */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                  Nomor SK Menteri Pertanian <span className="text-rose-500">*</span>
+                  Nomor SK Pelepasan (Menteri Pertanian) <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -844,32 +893,49 @@ export default function RegisteredVarietiesPage() {
                 />
               </div>
 
+              {/* SK PENDAFTARAN & SK DESKRIPSI */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                    Pemohon / Badan Usaha / Poktan
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Contoh: PT. East West Seed Indonesia"
-                    value={formData.produsen}
-                    onChange={(e) => setFormData({ ...formData, produsen: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
-                    Nomor Registrasi / Tanda Daftar (Opsional)
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+                    <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Nomor SK Pendaftaran / Tanda Daftar</span>
                   </label>
                   <input
                     type="text"
                     placeholder="Contoh: REG-HORTI-2026-0012"
                     value={formData.no_reg}
                     onChange={(e) => setFormData({ ...formData, no_reg: e.target.value })}
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-blue-600" />
+                    <span>SK Deskripsi / Dokumen Naskah</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Cabai Rawit K1SM3.pdf / SK-DESK-2026-01"
+                    value={formData.upload_deskripsi}
+                    onChange={(e) => setFormData({ ...formData, upload_deskripsi: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"
                   />
                 </div>
+              </div>
+
+              {/* PEMOHON / PRODUSEN */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Pemohon / Badan Usaha / Poktan
+                </label>
+                <input
+                  type="text"
+                  placeholder="Contoh: PT. East West Seed Indonesia"
+                  value={formData.produsen}
+                  onChange={(e) => setFormData({ ...formData, produsen: e.target.value })}
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                />
               </div>
 
               <div>
@@ -881,6 +947,19 @@ export default function RegisteredVarietiesPage() {
                   placeholder="Contoh: Dataran Rendah hingga Menengah (100 - 600 mdpl)"
                   value={formData.wil_adaptasi}
                   onChange={(e) => setFormData({ ...formData, wil_adaptasi: e.target.value })}
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  Ketahanan Hama & Penyakit / OPT (Opsional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Contoh: Tahan layu bakteri dan antraknosa"
+                  value={formData.tahan_opt}
+                  onChange={(e) => setFormData({ ...formData, tahan_opt: e.target.value })}
                   className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"
                 />
               </div>
@@ -907,7 +986,7 @@ export default function RegisteredVarietiesPage() {
         </div>
       )}
 
-      {/* MODAL 2: DETAIL VARIETAS */}
+      {/* MODAL 2: DETAIL VARIETAS LENGKAP */}
       {selectedDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl">
@@ -935,13 +1014,40 @@ export default function RegisteredVarietiesPage() {
             <div className="p-6 space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <span className="text-[11px] font-semibold text-slate-400 block">Nomor SK Menteri Pertanian</span>
+                  <span className="text-[11px] font-semibold text-slate-400 block">Nomor SK Pelepasan Mentan</span>
                   <span className="text-sm font-bold text-slate-900 font-mono mt-0.5 block">{selectedDetail.no_sk}</span>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-[11px] font-semibold text-slate-400 block">Tahun Pendaftaran Resmi</span>
                   <span className="text-sm font-bold text-slate-900 mt-0.5 block">{selectedDetail.tahun_daftar}</span>
+                </div>
+              </div>
+
+              {/* SK PENDAFTARAN & SK DESKRIPSI */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200">
+                  <span className="text-[11px] font-semibold text-emerald-800 block flex items-center gap-1.5">
+                    <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    Nomor SK Pendaftaran / Tanda Daftar
+                  </span>
+                  <span className="text-xs font-mono font-bold text-emerald-950 mt-1 block">
+                    {selectedDetail.no_reg && selectedDetail.no_reg !== '-' 
+                      ? selectedDetail.no_reg 
+                      : (selectedDetail.sk_pendaftaran && selectedDetail.sk_pendaftaran !== '-' ? selectedDetail.sk_pendaftaran : 'Dalam Proses Terbit')}
+                  </span>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-blue-50/50 border border-blue-200">
+                  <span className="text-[11px] font-semibold text-blue-800 block flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-blue-600" />
+                    Naskah Dokumen SK Deskripsi
+                  </span>
+                  <span className="text-xs font-semibold text-blue-950 mt-1 block truncate" title={cleanDeskripsiTitle(selectedDetail.upload_deskripsi || selectedDetail.sk_deskripsi)}>
+                    {cleanDeskripsiTitle(selectedDetail.upload_deskripsi || selectedDetail.sk_deskripsi) !== '-' 
+                      ? cleanDeskripsiTitle(selectedDetail.upload_deskripsi || selectedDetail.sk_deskripsi)
+                      : 'Arsip Dokumen Tersimpan di Server'}
+                  </span>
                 </div>
               </div>
 
@@ -952,13 +1058,6 @@ export default function RegisteredVarietiesPage() {
                   {selectedDetail.produsen}
                 </span>
               </div>
-
-              {selectedDetail.no_reg && selectedDetail.no_reg !== '-' && (
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <span className="text-[11px] font-semibold text-slate-400 block">Nomor Registrasi / Tanda Daftar</span>
-                  <span className="text-xs font-mono font-semibold text-slate-800 mt-0.5 block">{selectedDetail.no_reg}</span>
-                </div>
-              )}
 
               {selectedDetail.wil_adaptasi && (
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
@@ -977,7 +1076,7 @@ export default function RegisteredVarietiesPage() {
               <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                 <span className="flex items-center gap-1.5 text-emerald-800 font-semibold">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  Status: Terverifikasi Kementerian Pertanian RI
+                  Status: Terdaftar & Terverifikasi Kementerian Pertanian RI
                 </span>
                 <div className="flex items-center gap-2">
                   <button

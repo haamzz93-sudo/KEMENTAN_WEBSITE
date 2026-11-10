@@ -118,7 +118,9 @@ export interface VarietyApplication {
   recommendationLetterNo?: string;
 
   // Status Akhir
-  registrationNumber?: string; // Tanda Daftar PPVTPP / OSS
+  registrationNumber?: string; // Tanda Daftar PPVTPP / OSS / No SK
+  no_reg?: string;
+  upload_deskripsi?: string;
   lampiran1Model4File?: string;
   lampiran2aNaskahFile?: string;
   isConfidential?: boolean;

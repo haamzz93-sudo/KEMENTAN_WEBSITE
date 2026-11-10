@@ -1,5 +1,19 @@
 [
   {
+    "id": 4010,
+    "nama_varietas": "tes",
+    "komoditas": "tes",
+    "kategori": "Tanaman Sayuran",
+    "produsen": "tes",
+    "no_sk": "tes",
+    "tahun_daftar": "2026",
+    "no_reg": "tes",
+    "upload_deskripsi": "",
+    "upload_produk": "",
+    "wil_adaptasi": "",
+    "tahan_opt": ""
+  },
+  {
     "id": 1,
     "nama_varietas": "K1SM3",
     "komoditas": "Cabai Keriting",
