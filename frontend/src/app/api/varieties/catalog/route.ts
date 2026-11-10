@@ -15,12 +15,29 @@ function getVarietasData(): any[] {
   return [];
 }
 
+function formatWilAdaptasi(val?: string): string {
+  if (!val || val === '-' || !val.trim() || val === '[]') return 'Dataran Rendah - Menengah';
+  try {
+    if (val.startsWith('[')) {
+      const arr = JSON.parse(val);
+      const labels = arr.map((item: string) => {
+        if (item === '1') return 'Dataran Rendah';
+        if (item === '2') return 'Dataran Menengah';
+        if (item === '3') return 'Dataran Tinggi';
+        return item;
+      });
+      return labels.join(' & ');
+    }
+  } catch {}
+  return val;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const search = (searchParams.get('search') || '').toLowerCase().trim();
     const cropType = searchParams.get('crop_type') || searchParams.get('kategori') || 'semua';
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '30', 10)));
+    const limit = Math.min(200, Math.max(1, parseInt(searchParams.get('limit') || '50', 10)));
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
 
     let allData = getVarietasData();
@@ -41,7 +58,7 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       filtered = filtered.filter((v) => {
-        const text = `${v.nama_varietas || ''} ${v.komoditas || ''} ${v.produsen || ''} ${v.no_sk || ''} ${v.no_reg || ''}`.toLowerCase();
+        const text = `${v.nama_varietas || ''} ${v.komoditas || ''} ${v.produsen || ''} ${v.no_sk || ''} ${v.no_reg || ''} ${v.upload_deskripsi || ''}`.toLowerCase();
         return text.includes(search);
       });
     }
@@ -64,9 +81,10 @@ export async function GET(request: NextRequest) {
         applicant_name: v.produsen || '-',
         institution_type: 'swasta',
         crop_type: ct,
+        kategori_full: v.kategori || (ct === 'sayuran' ? 'Tanaman Sayuran' : ct === 'buah' ? 'Tanaman Buah' : ct === 'hias' ? 'Tanaman Florikultura' : 'Tanaman Obat'),
         commodity_name: v.komoditas || '-',
         proposed_variety_name: v.nama_varietas || '-',
-        lineage: v.wil_adaptasi || 'Varietas Resmi Terdaftar PROSEED',
+        lineage: formatWilAdaptasi(v.wil_adaptasi),
         submission_date: v.tahun_daftar || '2026',
         current_stage: 'layanan_4_selesai_terdaftar',
         registration_number: v.no_sk || '-',

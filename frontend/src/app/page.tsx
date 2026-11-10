@@ -29,7 +29,9 @@ import {
   ExternalLink,
   Shield,
   FileSignature,
-  Printer
+  Printer,
+  Table,
+  LayoutGrid
 } from 'lucide-react';
 import { INITIAL_VARIETY_APPLICATIONS } from '@/data/masterData';
 import { VarietyApplication } from '@/types';
@@ -87,7 +89,8 @@ export default function HomePage() {
   const [allApplications, setAllApplications] = useState<VarietyApplication[]>(INITIAL_VARIETY_APPLICATIONS);
   const [catalogVarieties, setCatalogVarieties] = useState<VarietyApplication[]>([]);
   const [catalogSearch, setCatalogSearch] = useState('');
-  const [catalogDisplayLimit, setCatalogDisplayLimit] = useState(6);
+  const [catalogViewMode, setCatalogViewMode] = useState<'table' | 'grid'>('table');
+  const [catalogDisplayLimit, setCatalogDisplayLimit] = useState(9);
   const [catalogTotalCount, setCatalogTotalCount] = useState(4010);
   const [objectionVarieties, setObjectionVarieties] = useState<VarietyApplication[]>([]);
   const [trackedApplication, setTrackedApplication] = useState<VarietyApplication | null>(null);
@@ -1057,7 +1060,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-8">
             
             <ScrollReveal direction="up" delay={0}>
-              <div className="max-w-4xl mb-8">
+              <div className="max-w-4xl mb-6">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <span className="text-xs font-black text-emerald-800 uppercase tracking-widest">
                     DATABASE VARIETAS UNGGUL
@@ -1073,7 +1076,7 @@ export default function HomePage() {
                   Data varietas tanaman hortikultura yang telah lulus sidang TP2VH, melewati masa sanggah publik, dan resmi memiliki SK Menteri Pertanian terintegrasi penuh dari basis data operasional PROSEED Kementan RI.
                 </p>
 
-                {/* Filter Tabs Rounded & Search Bar */}
+                {/* Filter Tabs, Search & View Switcher */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6">
                   {/* Filter Tabs */}
                   <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-none">
@@ -1089,9 +1092,9 @@ export default function HomePage() {
                         type="button"
                         onClick={() => {
                           setActiveTabCatalogue(tab.id as any);
-                          setCatalogDisplayLimit(6);
+                          setCatalogDisplayLimit(9);
                         }}
-                        className={`relative group overflow-hidden whitespace-nowrap px-3.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold uppercase rounded-xl transition-all shrink-0 flex items-center gap-1.5 ${
+                        className={`relative group overflow-hidden whitespace-nowrap px-3 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-bold uppercase rounded-xl transition-all shrink-0 flex items-center gap-1.5 ${
                           activeTabCatalogue === tab.id
                             ? 'bg-gradient-to-r from-emerald-800 to-teal-800 text-white shadow-md border border-emerald-500/40'
                             : 'bg-white hover:bg-emerald-50 text-slate-700 border border-slate-200 hover:border-emerald-300 shadow-2xs'
@@ -1105,33 +1108,61 @@ export default function HomePage() {
                     ))}
                   </div>
 
-                  {/* Search Bar */}
-                  <div className="relative min-w-[240px] sm:max-w-xs w-full">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      placeholder="Cari varietas, komoditas, SK..."
-                      value={catalogSearch}
-                      onChange={(e) => {
-                        setCatalogSearch(e.target.value);
-                        setCatalogDisplayLimit(6);
-                      }}
-                      className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 bg-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 shadow-2xs"
-                    />
-                    {catalogSearch && (
+                  <div className="flex items-center gap-2">
+                    {/* View Mode Switcher (Tabel vs Kotak 3x3) */}
+                    <div className="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200 shrink-0">
                       <button
-                        onClick={() => setCatalogSearch('')}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs p-0.5"
+                        type="button"
+                        onClick={() => setCatalogViewMode('table')}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                          catalogViewMode === 'table' ? 'bg-white text-emerald-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                        title="Tampilan Tabel Seperti di Admin"
                       >
-                        ✕
+                        <Table className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Tabel</span>
                       </button>
-                    )}
+                      <button
+                        type="button"
+                        onClick={() => setCatalogViewMode('grid')}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                          catalogViewMode === 'grid' ? 'bg-white text-emerald-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                        title="Tampilan Grid Kotak 3x3"
+                      >
+                        <LayoutGrid className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Kotak 3x3</span>
+                      </button>
+                    </div>
+
+                    {/* Search Bar */}
+                    <div className="relative min-w-[200px] sm:max-w-xs w-full">
+                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Cari nama, SK, komoditas..."
+                        value={catalogSearch}
+                        onChange={(e) => {
+                          setCatalogSearch(e.target.value);
+                          setCatalogDisplayLimit(9);
+                        }}
+                        className="w-full pl-9 pr-7 py-1.5 text-xs rounded-xl border border-slate-200 bg-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 shadow-2xs"
+                      />
+                      {catalogSearch && (
+                        <button
+                          onClick={() => setCatalogSearch('')}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </ScrollReveal>
 
-            {/* Kartu Katalog: LIQUID GLASS CARDS WITH HOVER ANIMATION */}
+            {/* KONTEN KATALOG: TABEL ATAU GRID KOTAK 3X3 */}
             {(() => {
               const sourceList = catalogVarieties.length > 0
                 ? catalogVarieties
@@ -1159,86 +1190,189 @@ export default function HomePage() {
 
               return (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                    {displayed.map((item, idx) => {
-                      const deskTitle = cleanDeskTitle(item.upload_deskripsi);
-                      return (
-                        <ScrollReveal key={item.id} direction="up" delay={(idx % 6) * 80} className="h-full">
-                          <div className="relative group overflow-hidden border border-white hover:border-emerald-500/60 bg-white/90 hover:bg-white backdrop-blur-2xl p-5 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col justify-between shadow-[0_10px_30px_rgba(6,78,59,0.06),inset_0_1px_2px_rgba(255,255,255,1)] hover:-translate-y-2 transition-all duration-300 h-full">
-                            {/* Top Specular Glare */}
-                            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/80 to-transparent pointer-events-none rounded-t-2xl sm:rounded-t-3xl" />
-                            {/* Hover light sheen sweep */}
-                            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-emerald-100/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                  {/* TAMPILAN 1: TABEL SEPERTI DI ADMIN (SINKRON DATA RESMI PROSEED) */}
+                  {catalogViewMode === 'table' ? (
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead>
+                            <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
+                              <th className="py-3 px-3 w-10 text-center">No</th>
+                              <th className="py-3 px-4 min-w-[150px]">Nama Varietas</th>
+                              <th className="py-3 px-3 min-w-[120px]">Komoditas</th>
+                              <th className="py-3 px-3 min-w-[130px]">Kategori</th>
+                              <th className="py-3 px-3 min-w-[170px]">Pemohon / Produsen</th>
+                              <th className="py-3 px-3 min-w-[160px]">Nomor SK Pelepasan</th>
+                              <th className="py-3 px-3 min-w-[140px]">SK Pendaftaran</th>
+                              <th className="py-3 px-3 min-w-[150px]">SK Deskripsi</th>
+                              <th className="py-3 px-2 text-center w-16">Tahun</th>
+                              <th className="py-3 px-3 text-center w-28">Verifikasi</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {displayed.map((item, idx) => {
+                              const deskTitle = cleanDeskTitle(item.upload_deskripsi);
+                              return (
+                                <tr key={item.id} className="hover:bg-emerald-50/40 transition-colors">
+                                  <td className="py-3 px-3 text-center font-medium text-slate-400">{idx + 1}</td>
+                                  <td className="py-3 px-4">
+                                    <span className="font-bold text-slate-900 block">{item.proposedVarietyName}</span>
+                                  </td>
+                                  <td className="py-3 px-3 font-medium text-slate-700">{item.commodityName}</td>
+                                  <td className="py-3 px-3">
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                                      item.cropType === 'sayuran'
+                                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                        : item.cropType === 'buah'
+                                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                        : item.cropType === 'hias'
+                                        ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                                        : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    }`}>
+                                      {item.cropType === 'sayuran' ? 'Tanaman Sayuran' : item.cropType === 'buah' ? 'Tanaman Buah' : item.cropType === 'hias' ? 'Tanaman Florikultura' : 'Tanaman Obat'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-3 text-slate-600">
+                                    <div className="truncate max-w-[170px]" title={item.applicantName}>
+                                      {item.applicantName}
+                                    </div>
+                                  </td>
+                                  <td className="py-3 px-3 font-mono text-[11px] text-slate-700">
+                                    <div className="truncate max-w-[160px]" title={item.registrationNumber}>
+                                      {item.registrationNumber || '-'}
+                                    </div>
+                                  </td>
+                                  <td className="py-3 px-3 font-mono text-[11px]">
+                                    {item.no_reg && item.no_reg !== '-' ? (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold truncate max-w-[130px]" title={item.no_reg}>
+                                        <FileCheck className="w-3 h-3 text-emerald-600 shrink-0" />
+                                        <span className="truncate">{item.no_reg}</span>
+                                      </span>
+                                    ) : (
+                                      <span className="text-slate-400 font-mono text-[11px]">-</span>
+                                    )}
+                                  </td>
+                                  <td className="py-3 px-3 text-[11px]">
+                                    {deskTitle && deskTitle !== '-' ? (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-medium truncate max-w-[150px]" title={deskTitle}>
+                                        <FileText className="w-3 h-3 text-blue-600 shrink-0" />
+                                        <span className="truncate">{deskTitle}</span>
+                                      </span>
+                                    ) : (
+                                      <span className="text-slate-400 text-[11px]">-</span>
+                                    )}
+                                  </td>
+                                  <td className="py-3 px-2 text-center font-semibold text-slate-800">
+                                    {item.submissionDate || '2026'}
+                                  </td>
+                                  <td className="py-3 px-3 text-center">
+                                    <div className="flex items-center justify-center gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => setSelectedVerifyVariety(item)}
+                                        title="Verifikasi Digital QR"
+                                        className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                                      >
+                                        <QrCode className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setSelectedManuscriptVariety(item)}
+                                        title="Lihat Naskah SK Deskripsi"
+                                        className="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                                      >
+                                        <FileText className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    /* TAMPILAN 2: GRID KOTAK 3X3 (BATASAN 9 KOTAK) */
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                      {displayed.map((item, idx) => {
+                        const deskTitle = cleanDeskTitle(item.upload_deskripsi);
+                        return (
+                          <ScrollReveal key={item.id} direction="up" delay={(idx % 6) * 60} className="h-full">
+                            <div className="relative group overflow-hidden border border-white hover:border-emerald-500/60 bg-white/90 hover:bg-white backdrop-blur-2xl p-5 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col justify-between shadow-[0_10px_30px_rgba(6,78,59,0.06),inset_0_1px_2px_rgba(255,255,255,1)] hover:-translate-y-1.5 transition-all duration-300 h-full">
+                              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/80 to-transparent pointer-events-none rounded-t-2xl sm:rounded-t-3xl" />
+                              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-emerald-100/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
 
-                            <div className="relative z-10">
-                              <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-                                <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-lg border ${
-                                  item.cropType === 'sayuran' 
-                                    ? 'text-blue-800 bg-blue-50 border-blue-200' 
-                                    : item.cropType === 'buah'
-                                    ? 'text-amber-800 bg-amber-50 border-amber-200'
-                                    : item.cropType === 'hias'
-                                    ? 'text-purple-800 bg-purple-50 border-purple-200'
-                                    : 'text-emerald-800 bg-emerald-50 border-emerald-200'
-                                }`}>
-                                  Tanaman {item.cropType}
-                                </span>
-                                <span className="text-[11px] font-mono font-semibold text-slate-500">
-                                  Tahun {item.submissionDate || '2026'}
-                                </span>
+                              <div className="relative z-10">
+                                <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                                  <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-lg border ${
+                                    item.cropType === 'sayuran' 
+                                      ? 'text-blue-800 bg-blue-50 border-blue-200' 
+                                      : item.cropType === 'buah'
+                                      ? 'text-amber-800 bg-amber-50 border-amber-200'
+                                      : item.cropType === 'hias'
+                                      ? 'text-purple-800 bg-purple-50 border-purple-200'
+                                      : 'text-emerald-800 bg-emerald-50 border-emerald-200'
+                                  }`}>
+                                    Tanaman {item.cropType}
+                                  </span>
+                                  <span className="text-[11px] font-mono font-semibold text-slate-500">
+                                    Tahun {item.submissionDate || '2026'}
+                                  </span>
+                                </div>
+
+                                <h4 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-emerald-950 transition-colors">
+                                  {item.proposedVarietyName}
+                                </h4>
+                                <p className="text-xs text-slate-500 mt-0.5">Komoditas: <strong className="text-slate-800">{item.commodityName}</strong></p>
+                                
+                                <div className="my-3 p-3 bg-slate-50/80 border border-slate-100 rounded-2xl text-[11px] text-slate-600 space-y-1.5 shadow-inner">
+                                  <div className="truncate" title={item.applicantName}>Pemohon: <strong className="text-slate-800">{item.applicantName}</strong></div>
+                                  {item.registrationNumber && (
+                                    <div className="text-slate-800 font-mono text-[10px] truncate" title={item.registrationNumber}>
+                                      <span className="text-slate-500">SK Mentan:</span> <strong className="text-slate-900">{item.registrationNumber}</strong>
+                                    </div>
+                                  )}
+                                  {item.no_reg && item.no_reg !== '-' && (
+                                    <div className="text-emerald-900 font-mono text-[10px] truncate" title={item.no_reg}>
+                                      <span className="text-emerald-700">SK Tanda Daftar:</span> <strong>{item.no_reg}</strong>
+                                    </div>
+                                  )}
+                                  {deskTitle && deskTitle !== '-' && (
+                                    <div className="text-blue-900 text-[10px] truncate" title={deskTitle}>
+                                      <span className="text-blue-700">SK Deskripsi:</span> <strong>{deskTitle}</strong>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
 
-                              <h4 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-emerald-950 transition-colors">
-                                {item.proposedVarietyName}
-                              </h4>
-                              <p className="text-xs text-slate-500 mt-0.5">Komoditas: <strong className="text-slate-800">{item.commodityName}</strong></p>
-                              
-                              <div className="my-3 p-3 bg-slate-50/80 border border-slate-100 rounded-2xl text-[11px] text-slate-600 space-y-1.5 shadow-inner">
-                                <div className="truncate" title={item.applicantName}>Pemohon: <strong className="text-slate-800">{item.applicantName}</strong></div>
-                                {item.registrationNumber && (
-                                  <div className="text-slate-800 font-mono text-[10px] truncate" title={item.registrationNumber}>
-                                    <span className="text-slate-500">SK Mentan:</span> <strong className="text-slate-900">{item.registrationNumber}</strong>
-                                  </div>
-                                )}
-                                {item.no_reg && item.no_reg !== '-' && (
-                                  <div className="text-emerald-900 font-mono text-[10px] truncate" title={item.no_reg}>
-                                    <span className="text-emerald-700">SK Tanda Daftar:</span> <strong>{item.no_reg}</strong>
-                                  </div>
-                                )}
-                                {deskTitle && deskTitle !== '-' && (
-                                  <div className="text-blue-900 text-[10px] truncate" title={deskTitle}>
-                                    <span className="text-blue-700">SK Deskripsi:</span> <strong>{deskTitle}</strong>
-                                  </div>
-                                )}
+                              <div className="pt-3 border-t border-slate-100 flex items-center justify-between relative z-10">
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedVerifyVariety(item)}
+                                  className="text-[11px] text-emerald-800 hover:text-emerald-950 font-semibold flex items-center space-x-1.5 group/v cursor-pointer transition-colors"
+                                >
+                                  <QrCode className="w-3.5 h-3.5 text-emerald-700 group-hover/v:scale-110 transition-transform" />
+                                  <span>Verifikasi Digital</span>
+                                </button>
+                                <button 
+                                  type="button"
+                                  onClick={() => setSelectedManuscriptVariety(item)}
+                                  className="relative group/btn overflow-hidden px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs flex items-center space-x-1.5 shadow-[0_2px_8px_rgba(16,185,129,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] hover:scale-105 active:scale-95 transition-all"
+                                >
+                                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
+                                  <span>Lihat Naskah</span>
+                                  <ArrowRight className="w-3 h-3 text-emerald-700 group-hover/btn:translate-x-0.5 transition-transform" />
+                                </button>
                               </div>
                             </div>
+                          </ScrollReveal>
+                        );
+                      })}
+                    </div>
+                  )}
 
-                            <div className="pt-3 border-t border-slate-100 flex items-center justify-between relative z-10">
-                              <button
-                                type="button"
-                                onClick={() => setSelectedVerifyVariety(item)}
-                                className="text-[11px] text-emerald-800 hover:text-emerald-950 font-semibold flex items-center space-x-1.5 group/v cursor-pointer transition-colors"
-                              >
-                                <QrCode className="w-3.5 h-3.5 text-emerald-700 group-hover/v:scale-110 transition-transform" />
-                                <span>Verifikasi Digital</span>
-                              </button>
-                              <button 
-                                type="button"
-                                onClick={() => setSelectedManuscriptVariety(item)}
-                                className="relative group/btn overflow-hidden px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs flex items-center space-x-1.5 shadow-[0_2px_8px_rgba(16,185,129,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] hover:scale-105 active:scale-95 transition-all"
-                              >
-                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 pointer-events-none" />
-                                <span>Lihat Naskah</span>
-                                <ArrowRight className="w-3 h-3 text-emerald-700 group-hover/btn:translate-x-0.5 transition-transform" />
-                              </button>
-                            </div>
-                          </div>
-                        </ScrollReveal>
-                      );
-                    })}
-                  </div>
-
-                  {/* Footer Action: Muat Lebih / Buka Dashboard */}
+                  {/* Footer Action: Batasan Kotak / Lihat Selengkapnya di Dashboard */}
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200/60">
                     <span className="text-xs text-slate-500">
                       Menampilkan <strong className="text-slate-800">{Math.min(catalogDisplayLimit, filtered.length)}</strong> dari <strong className="text-slate-800">{filtered.length}</strong> varietas terfilter (Total database: <strong className="text-emerald-700">{catalogTotalCount.toLocaleString('id-ID')}</strong> varietas)
@@ -1248,17 +1382,17 @@ export default function HomePage() {
                       {filtered.length > catalogDisplayLimit && (
                         <button
                           type="button"
-                          onClick={() => setCatalogDisplayLimit((prev) => prev + 6)}
+                          onClick={() => setCatalogDisplayLimit((prev) => prev + 9)}
                           className="px-4 py-2 text-xs font-bold rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all shadow-2xs"
                         >
-                          Tampilkan Lebih Banyak
+                          Tampilkan 9 Data Berikutnya
                         </button>
                       )}
                       <Link
                         href="/dashboard/varietas-terdaftar"
                         className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white transition-all shadow-md hover:scale-[1.02] active:scale-95"
                       >
-                        <span>Database Lengkap di Dashboard</span>
+                        <span>Buka Seluruh Database (4.010 Varietas) di Dashboard</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
