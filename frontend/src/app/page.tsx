@@ -1470,8 +1470,8 @@ export default function HomePage() {
           MODAL 1: VERIFIKASI DIGITAL TANDA DAFTAR PPVTPP RESMI KEMENTAN RI
       ========================================================================= */}
       {selectedVerifyVariety && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
-          <div className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(6,78,59,0.3)] max-w-xl w-full border border-white overflow-hidden p-6 sm:p-8 animate-scaleUp">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md overflow-y-auto animate-fadeIn">
+          <div className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(6,78,59,0.3)] max-w-xl w-full max-h-[90vh] overflow-y-auto border border-white p-6 sm:p-8 animate-scaleUp my-auto">
             {/* Ambient top glow */}
             <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-emerald-500/15 to-transparent pointer-events-none" />
 
@@ -1584,8 +1584,8 @@ export default function HomePage() {
           MODAL 2: NASKAH ILMIAH & DESKRIPSI MORFOLOGI HASIL SIDANG TP2VH
       ========================================================================= */}
       {selectedManuscriptVariety && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
-          <div className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(6,78,59,0.3)] max-w-2xl w-full border border-white max-h-[90vh] overflow-y-auto p-6 sm:p-8 animate-scaleUp">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md overflow-y-auto animate-fadeIn">
+          <div className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_rgba(6,78,59,0.3)] max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white p-6 sm:p-8 animate-scaleUp my-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-200">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 shadow-xs">

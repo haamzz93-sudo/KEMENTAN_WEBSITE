@@ -771,18 +771,18 @@ export default function RegisteredVarietiesPage() {
 
       {/* MODAL 1: FORM CREATE / EDIT VARIETAS (LENGKAP DENGAN SK PELEPASAN, SK PENDAFTARAN & SK DESKRIPSI) */}
       {isFormModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl">
-            <div className="bg-gradient-to-r from-emerald-900 to-teal-900 text-white p-5 rounded-t-2xl flex items-center justify-between">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col border border-slate-200 shadow-2xl my-auto overflow-hidden">
+            <div className="bg-gradient-to-r from-emerald-900 to-teal-900 text-white px-5 py-4 rounded-t-2xl flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-amber-400">
                   {isEditMode ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-white leading-tight">
                     {isEditMode ? 'Edit Data Varietas Ber-SK' : 'Tambah Varietas Terdaftar Baru'}
                   </h3>
-                  <p className="text-[11px] text-emerald-200/90">
+                  <p className="text-[11px] text-emerald-200/90 leading-tight mt-0.5">
                     {isEditMode ? 'Perbarui data legalitas dan SK Menteri Pertanian' : 'Pencatatan varietas resmi ke basis data nasional PROSEED'}
                   </p>
                 </div>
@@ -795,8 +795,9 @@ export default function RegisteredVarietiesPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmitForm} className="p-6 space-y-4 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmitForm} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] font-semibold text-slate-700 mb-1">
                     Nama Varietas <span className="text-rose-500">*</span>
@@ -963,19 +964,20 @@ export default function RegisteredVarietiesPage() {
                   className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"
                 />
               </div>
+              </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2.5 p-4 border-t border-slate-200 bg-slate-50 shrink-0 rounded-b-2xl">
                 <button
                   type="button"
                   onClick={() => setIsFormModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+                  className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-medium hover:bg-slate-100 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold transition-all disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold transition-all disabled:opacity-50 shadow-sm"
                 >
                   <Save className="w-4 h-4" />
                   <span>{submitting ? 'Menyimpan...' : 'Simpan Data'}</span>
@@ -988,16 +990,16 @@ export default function RegisteredVarietiesPage() {
 
       {/* MODAL 2: DETAIL VARIETAS LENGKAP */}
       {selectedDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 shadow-2xl">
-            <div className="bg-gradient-to-r from-emerald-900 to-teal-900 text-white p-6 rounded-t-2xl flex items-start justify-between">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-200 shadow-2xl my-auto overflow-hidden">
+            <div className="bg-gradient-to-r from-emerald-900 to-teal-900 text-white px-6 py-4 rounded-t-2xl flex items-start justify-between shrink-0">
               <div>
                 <span className="text-[10px] font-semibold text-emerald-300 uppercase tracking-wider">
                   Detail Varietas Terdaftar Kementan RI
                 </span>
-                <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-2">
-                  <Sprout className="w-5 h-5 text-amber-400" />
-                  {selectedDetail.nama_varietas}
+                <h3 className="text-xl font-bold text-white mt-0.5 flex items-center gap-2 leading-tight">
+                  <Sprout className="w-5 h-5 text-amber-400 shrink-0" />
+                  <span>{selectedDetail.nama_varietas}</span>
                 </h3>
                 <p className="text-xs text-emerald-100/80 mt-0.5">
                   Komoditas: {selectedDetail.komoditas} ({selectedDetail.kategori})
@@ -1011,7 +1013,7 @@ export default function RegisteredVarietiesPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-4 text-xs">
+            <div className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-[11px] font-semibold text-slate-400 block">Nomor SK Pelepasan Mentan</span>
@@ -1072,30 +1074,30 @@ export default function RegisteredVarietiesPage() {
                   <span className="text-xs text-slate-700 mt-0.5 block">{selectedDetail.tahan_opt}</span>
                 </div>
               )}
+            </div>
 
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span className="flex items-center gap-1.5 text-emerald-800 font-semibold">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  Status: Terdaftar & Terverifikasi Kementerian Pertanian RI
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      const item = selectedDetail;
-                      setSelectedDetail(null);
-                      handleOpenEdit(item, { stopPropagation: () => {} } as any);
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold"
-                  >
-                    Edit SK
-                  </button>
-                  <button
-                    onClick={() => setSelectedDetail(null)}
-                    className="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold"
-                  >
-                    Tutup
-                  </button>
-                </div>
+            <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-[11px] text-slate-500 shrink-0 rounded-b-2xl">
+              <span className="flex items-center gap-1.5 text-emerald-800 font-semibold">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                Status: Terdaftar & Terverifikasi Kementerian Pertanian RI
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const item = selectedDetail;
+                    setSelectedDetail(null);
+                    handleOpenEdit(item, { stopPropagation: () => {} } as any);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold"
+                >
+                  Edit SK
+                </button>
+                <button
+                  onClick={() => setSelectedDetail(null)}
+                  className="px-4 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold"
+                >
+                  Tutup
+                </button>
               </div>
             </div>
           </div>
@@ -1104,7 +1106,7 @@ export default function RegisteredVarietiesPage() {
 
       {/* MODAL 3: KONFIRMASI HAPUS */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 border border-slate-200 shadow-2xl text-xs space-y-4">
             <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
