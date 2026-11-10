@@ -771,7 +771,7 @@ export default function RegisteredVarietiesPage() {
 
       {/* MODAL 1: FORM CREATE / EDIT VARIETAS (LENGKAP DENGAN SK PELEPASAN, SK PENDAFTARAN & SK DESKRIPSI) */}
       {isFormModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto pt-24 pb-8 sm:py-10 animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col border border-slate-200 shadow-2xl my-auto overflow-hidden">
             <div className="bg-gradient-to-r from-emerald-900 to-teal-900 text-white px-5 py-4 rounded-t-2xl flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5">
@@ -990,7 +990,7 @@ export default function RegisteredVarietiesPage() {
 
       {/* MODAL 2: DETAIL VARIETAS LENGKAP */}
       {selectedDetail && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto pt-24 pb-8 sm:py-10 animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-200 shadow-2xl my-auto overflow-hidden">
             <div className="bg-gradient-to-r from-emerald-900 to-teal-900 text-white px-6 py-4 rounded-t-2xl flex items-start justify-between shrink-0">
               <div>

@@ -840,7 +840,7 @@ export default function DashboardLayout({
         </header>
 
         {/* Page Content Body */}
-        <main className="flex-1 p-4 sm:p-8 relative z-10">
+        <main className="flex-1 p-4 sm:p-8 relative">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
